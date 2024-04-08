@@ -31,8 +31,8 @@ def farm():
     db = Database("db.db")
     watcher = Watcher(
         youtube_api=YoutubeApi(api_key="AIzaSyCzoYgSTthBWylfMy7-eIhQOwpN33reAc0",
-                               channel_name='AgrealusReakce',
-                               channel_id="UCV_67Ju1MeHPOAF_oDv7OmA"),
+                               channel_name='tartancz',
+                               channel_id="UCC_0FddrsldugADEZa8N-oA"),
         db=db,
         maximum_retries=1
     )
