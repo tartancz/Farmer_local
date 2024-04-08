@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 ACCESS_TOKEN_URL = 'https://authentication.wolt.com/v1/wauth2/access_token'
 REDEEM_DISCOUNT_URL = 'https://restaurant-api.wolt.com/v2/credit_codes/consume'
 
-logger = logging.getLogger(__name__)
+logger = logger = logging.getLogger("main")
 
 
 @dataclass

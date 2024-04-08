@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from src.redeemer import Redeemer
     from modal.functions import Function
 
-logger = logging.getLogger(__name__)
+logger = logger = logging.getLogger("main")
 
 
 @dataclass

@@ -6,7 +6,7 @@ from datetime import datetime
 from src.database.model import Model
 from src.database.errors import RowDontExistException
 
-logger = logging.getLogger(__name__)
+logger = logger = logging.getLogger("main")
 
 
 @dataclass

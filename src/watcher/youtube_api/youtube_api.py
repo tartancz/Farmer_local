@@ -16,7 +16,7 @@ from src.watcher.errors import VideoDoNotExistException
 RESET_UNITS_TIME = time(7, tzinfo=pytz.UTC)
 SECOND_IN_DAY = 60 * 60 * 24
 
-logger = logging.getLogger(__name__)
+logger = logger = logging.getLogger("main")
 
 
 @dataclass

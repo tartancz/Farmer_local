@@ -16,7 +16,7 @@ from src.farmer.farmer_local import FarmerLocal
 
 
 def setLogging():
-    logger = logging.getLogger(__name__)
+    logger = logger = logging.getLogger("main")
     logger.setLevel(logging.DEBUG)
     # create file handler which logs even debug messages
     fh = logging.FileHandler("app.log")
