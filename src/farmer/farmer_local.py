@@ -61,7 +61,6 @@ class FarmerLocal:
                     break
             except Exception as e:
                 # any other is logged
-                self.discord.send(str(e))
                 logger.exception(e)
             # if more then 5 failures in time windows program will end
             failures.append(time())
@@ -72,7 +71,9 @@ class FarmerLocal:
                 return
 
     def _run(self):
+        self.watcher.insert_latest_videos_into_db()
         for video in self.watcher.watch():
+            logger.debug(f"Going to process video with id {video.video_id}")
             with self:
                 codes = self._finds_code_in_desription(video)
                 if codes:
