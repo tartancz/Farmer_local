@@ -27,7 +27,7 @@ def setLogging():
     logger.addHandler(fh)
 
 
-def main():
+def farm():
     db = Database("db.db")
     watcher = Watcher(
         youtube_api=YoutubeApi(api_key="AIzaSyCzoYgSTthBWylfMy7-eIhQOwpN33reAc0",
@@ -46,6 +46,11 @@ def main():
         search_regex="AG[1-9][0|O]{2}[1-9A-z]{7}"
     )
     f.run()
+
+
+def main():
+    setLogging()
+    farm()
 
 
 if __name__ == "__main__":
