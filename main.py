@@ -12,7 +12,7 @@ import logging
 import os
 import asyncio
 from aiostream import stream
-from src.farmer.farmer_local import FarmerLocal
+from src.farmer_local.farmer_local import FarmerLocal
 
 
 def setLogging():
@@ -34,7 +34,6 @@ def farm():
                                channel_name='tartancz',
                                channel_id="UCC_0FddrsldugADEZa8N-oA"),
         db=db,
-        maximum_retries=1
     )
     wolt = Wolt(db, "moje")
     fn = modal.Function.lookup("farming-wolt", "process_youtube_video")
@@ -45,7 +44,7 @@ def farm():
         fn=fn,
         search_regex="AG[1-9][0|O]{2}[1-9A-z]{7}"
     )
-    f.run()
+    f._run()
 
 
 def main():

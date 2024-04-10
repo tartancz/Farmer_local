@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from src.redeemer import Redeemer
     from modal.functions import Function
 
-logger = logger = logging.getLogger("main")
+logger = logging.getLogger("main")
 
 
 @dataclass
@@ -62,6 +62,7 @@ class FarmerLocal:
             except Exception as e:
                 # any other is logged
                 logger.exception(e)
+                print(e)
             # if more then 5 failures in time windows program will end
             failures.append(time())
             if len(failures) < 5:
@@ -70,9 +71,15 @@ class FarmerLocal:
             if time() - oldest_exc < 1800:
                 return
 
+    def __fake_return_video(self, video: str):
+        video = self.watcher._yt_api.get_detailed_video(video)
+        yield video
+
     def _run(self):
-        self.watcher.insert_latest_videos_into_db()
-        for video in self.watcher.watch():
+        # self.watcher.insert_latest_videos_into_db()
+        logger.info("starting farming")
+        # for video in self.watcher.watch():
+        for video in self.__fake_return_video("PctEhHUqnvY"):
             logger.debug(f"Going to process video with id {video.video_id}")
             with self:
                 codes = self._finds_code_in_desription(video)
@@ -82,8 +89,11 @@ class FarmerLocal:
                 if TYPE_CHECKING:
                     # only for type hint
                     code_obj: Code  # type: ignore
+                logger.debug("Going to process video with OCR")
                 for code_obj in self.fn.remote_gen(video.video_id):
+                    print("asd", code_obj)
                     code_obj.how_long_to_proccess_in_cloud = time() - self._start
+                    logger.debug(f"Found code in video: {code_obj.code}, with timestamp {code_obj.timestamp}")
                     self._redeem_codes([code_obj])
 
     def _finds_code_in_desription(self, video) -> list[Code]:
@@ -115,7 +125,7 @@ class FarmerLocal:
                     f.write(code.frame)
 
     def __enter__(self):
-        self.start = time()
+        self._start = time()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.start = None
+        self._start = None
