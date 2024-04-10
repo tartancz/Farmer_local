@@ -3,10 +3,11 @@ import re
 from dataclasses import dataclass
 from time import time, sleep
 from pathlib import Path
+import os
 
 import requests
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypedDict
 
 from src.redeemer.redeemer import CodeState
 
@@ -15,18 +16,13 @@ if TYPE_CHECKING:
     from src.watcher.watcher import Watcher
     from src.database import Database
     from src.redeemer import Redeemer
+    from src.cloud_types import CodeType
     from modal.functions import Function
+
 
 logger = logging.getLogger("main")
 
 
-@dataclass
-class Code:
-    code: str
-    how_long_to_proccess_in_total: float | None = None
-    how_long_to_proccess_in_cloud: float | None = None
-    timestamp: float | None = None
-    frame: bytes | None = None
 
 
 class FarmerLocal:
@@ -76,10 +72,9 @@ class FarmerLocal:
         yield video
 
     def _run(self):
-        # self.watcher.insert_latest_videos_into_db()
+        self.watcher.insert_latest_videos_into_db()
         logger.info("starting farming")
-        # for video in self.watcher.watch():
-        for video in self.__fake_return_video("PctEhHUqnvY"):
+        for video in self.watcher.watch():
             logger.debug(f"Going to process video with id {video.video_id}")
             with self:
                 codes = self._finds_code_in_desription(video)
@@ -88,41 +83,38 @@ class FarmerLocal:
                     self._redeem_codes(codes)
                 if TYPE_CHECKING:
                     # only for type hint
-                    code_obj: Code  # type: ignore
+                    code_dict: CodeType  # type: ignore
                 logger.debug("Going to process video with OCR")
-                for code_obj in self.fn.remote_gen(video.video_id):
-                    print("asd", code_obj)
-                    code_obj.how_long_to_proccess_in_cloud = time() - self._start
-                    logger.debug(f"Found code in video: {code_obj.code}, with timestamp {code_obj.timestamp}")
-                    self._redeem_codes([code_obj])
+                for code_dict in self.fn.remote_gen(video.video_id):
+                    print("asd", code_dict)
+                    logger.debug(f"Found code in video: {video.video_id}, with timestamp {code_dict['timestamp']}")
+                    self._redeem_codes([code_dict], video)
 
-    def _finds_code_in_desription(self, video) -> list[Code]:
+    def _finds_code_in_desription(self, video) -> list[str]:
         codes = []
         for code in self.search_regex.findall(video.description):
-            code_obj = Code(
-                code=code
-            )
-            codes.append(code_obj)
+            codes.append(code)
         return codes
 
-    def _redeem_codes(self, codes: list[Code], video: 'DetailedVideoFromApi'):
-        for code in codes:
-            code_state = self.redeemer.redeem_code(code.code)
-            logger.info(f"Code returned {code_state.name} with {code}")
+    def _redeem_codes(self, codes: list['CodeType'], video: 'DetailedVideoFromApi'):
+        for code_dict in codes:
+            code = code_dict["code"]
+            code_state = self.redeemer.redeem_code(code)
+            logger.info(f"Code returned {code_state.name} with {code_dict}")
             # TODO temporary solution add database row and better image saving
+            # TODO how long took from running ocr modal
             logger.info(f"""
-            Code: {code}
+            Code: {code_dict}
             Video: {video}
             CodeState: {code_state.name}
-            timestamp: {code.timestamp}
+            timestamp: {code_dict["timestamp"]}
             how_long_to_proccess_in_total: {time() - self._start}
-            how_long_to_proccess_in_cloud: {code}
             """)
-            if code.frame:
+            if code_dict["frame"]:
                 p = Path(f"./temp/{video.video_id}")
-                p.mkdir(exist_ok=True)
-                with open(p / f"{code.code}.jpg", 'wb') as f:
-                    f.write(code.frame)
+                p.mkdir(exist_ok=True, parents=True)
+                p = p / f"{code_dict['code']}.jpg"
+                p.write_bytes(code_dict["frame"])
 
     def __enter__(self):
         self._start = time()

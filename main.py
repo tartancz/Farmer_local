@@ -26,13 +26,15 @@ def setLogging():
 
     logger.addHandler(fh)
 
+MUJ_YT = 'UCC_0FddrsldugADEZa8N-oA'
+AG_YT = 'UCV_67Ju1MeHPOAF_oDv7OmA'
 
 def farm():
     db = Database("db.db")
     watcher = Watcher(
         youtube_api=YoutubeApi(api_key="AIzaSyCzoYgSTthBWylfMy7-eIhQOwpN33reAc0",
-                               channel_name='tartancz',
-                               channel_id="UCC_0FddrsldugADEZa8N-oA"),
+                               channel_name='AgraelusReakce',
+                               channel_id="UCV_67Ju1MeHPOAF_oDv7OmA"),
         db=db,
     )
     wolt = Wolt(db, "moje")
@@ -44,7 +46,7 @@ def farm():
         fn=fn,
         search_regex="AG[1-9][0|O]{2}[1-9A-z]{7}"
     )
-    f._run()
+    f.run()
 
 
 def main():
