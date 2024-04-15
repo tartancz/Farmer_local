@@ -38,7 +38,6 @@ class Watcher:
             sleep(SECONDS_IN_DAY / self._yt_api.maximum_checks_calls_per_day)
             if self._is_video_count_changed():
                 video = self._get_latest_video()
-                print(f"watcher: {video}, {bool(video)}")
                 if video:
                     logger.info(f"New video found with video_id: {video.video_id}")
                     self._db.youtube_video.insert(
@@ -86,12 +85,12 @@ class Watcher:
         logger.info("Getting latest video")
         for _ in range(self.maximum_retries):
             video_api = self._yt_api.get_latest_videos_from_api(1)[0]
-            logger.info(f"video_api: {video_api}")
+            logger.info(f"Video from api returned {video_api.video_id}")
             if not self._db.youtube_video.is_video_in_db(video_id=video_api.video_id):
                 logger.debug("video is not in db, returning video from api")
                 return self._yt_api.get_detailed_video(video_id=video_api.video_id)
             video_scrapping_id = self._yt_api.get_latest_videos_from_scrapping(1)[0]
-            logger.info(f"video_scrapping_id: {video_scrapping_id}")
+            logger.info(f"Video from scrapping returned {video_api.video_id}")
             if not self._db.youtube_video.is_video_in_db(video_id=video_scrapping_id):
                 logger.debug("video is not in db, returning video from scrapping")
                 return self._yt_api.get_detailed_video(video_id=video_scrapping_id)

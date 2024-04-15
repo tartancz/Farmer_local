@@ -65,7 +65,7 @@ class FarmerLocal:
                 continue
             oldest_exc = failures.pop(0)
             if time() - oldest_exc < 1800:
-                return
+                logger.critical(f"PROGRAM ENDING BECAUSE TOO MANY EXCEPTIONS OCCURED.")
 
     def __fake_return_video(self, video: str):
         video = self.watcher._yt_api.get_detailed_video(video)
@@ -75,7 +75,7 @@ class FarmerLocal:
         self.watcher.insert_latest_videos_into_db()
         logger.info("starting farming")
         for video in self.watcher.watch():
-            logger.debug(f"Going to process video with id {video.video_id}")
+            logger.info(f"Going to process video with id {video.video_id}")
             with self:
                 codes = self._finds_code_in_desription(video)
                 if codes:
