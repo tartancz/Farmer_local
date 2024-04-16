@@ -34,7 +34,7 @@ CREATE TABLE "code"
     "video_id"                     integer REFERENCES youtube_video (video_id) NOT NULL,
     "code"                         nvarchar                                    NOT NULL,
     "how_long_to_process_in_total" float                                       NOT NULL,
-    "code_state_id" primary key REFERENCES code_state (id)                     NOT NULL,
+    "code_state_id"                REFERENCES code_state (id)                  NOT NULL,
     "timestamp"                    float                                       NULL,
     "path_to_frame"                NVARCHAR                                    NULL,
     "created"                      timestamp DEFAULT CURRENT_TIMESTAMP         NOT NULL
