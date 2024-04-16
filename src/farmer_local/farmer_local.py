@@ -38,7 +38,7 @@ class FarmerLocal:
         self.db = db
         self.fn = fn
         self.search_regex = re.compile(search_regex)
-        self._start: int | None = None
+        self._start: float | None = None
 
     def run(self):
         failures = list()
@@ -80,7 +80,7 @@ class FarmerLocal:
                 codes = self._finds_code_in_desription(video)
                 if codes:
                     logger.info(f"Found codes in description: {codes}")
-                    self._redeem_codes(codes)
+                    self._redeem_codes_from_description(codes, video)
                 if TYPE_CHECKING:
                     # only for type hint
                     code_dict: CodeType  # type: ignore
@@ -88,33 +88,49 @@ class FarmerLocal:
                 for code_dict in self.fn.remote_gen(video.video_id):
                     print("asd", code_dict)
                     logger.debug(f"Found code in video: {video.video_id}, with timestamp {code_dict['timestamp']}")
-                    self._redeem_codes([code_dict], video)
+                    self._redeem_codes_from_modal([code_dict], video)
 
-    def _finds_code_in_desription(self, video) -> list[str]:
+    def _finds_code_in_desription(self, video) -> list['str']:
         codes = []
         for code in self.search_regex.findall(video.description):
             codes.append(code)
         return codes
 
-    def _redeem_codes(self, codes: list['CodeType'], video: 'DetailedVideoFromApi'):
+    def _redeem_codes_from_modal(self, codes: list['CodeType'], video: 'DetailedVideoFromApi'):
         for code_dict in codes:
             code = code_dict["code"]
             code_state = self.redeemer.redeem_code(code)
-            logger.info(f"Code returned {code_state.name} with {code_dict}")
-            # TODO temporary solution add database row and better image saving
+            logger.info(f"Code returned {code_state.name} with code {code_dict['code']}")
             # TODO how long took from running ocr modal
-            logger.info(f"""
-            Code: {code_dict}
-            Video: {video}
-            CodeState: {code_state.name}
-            timestamp: {code_dict["timestamp"]}
-            how_long_to_proccess_in_total: {time() - self._start}
-            """)
-            if code_dict["frame"]:
-                p = Path(f"./temp/{video.video_id}")
-                p.mkdir(exist_ok=True, parents=True)
-                p = p / f"{code_dict['code']}.jpg"
-                p.write_bytes(code_dict["frame"])
+
+            # write image from modal
+            p = Path(f"./temp/{video.video_id}")
+            p.mkdir(exist_ok=True, parents=True)
+            p = p / f"{code_dict['code']}.jpg"
+            p.write_bytes(code_dict["frame"])
+
+            #inserting into db
+            self.db.code.insert(
+                video_id=video.video_id,
+                code=code_dict.get("code"),
+                timestamp=code_dict["timestamp"],
+                how_long_to_proccess_in_total=time() - self._start,
+                code_state_id=code_state.value,
+                path_to_frame=p.absolute()
+            )
+
+    def _redeem_codes_from_description(self, codes: list[str], video: 'DetailedVideoFromApi'):
+        for code in codes:
+            code_state = self.redeemer.redeem_code(code)
+            logger.info(f"Code returned {code_state.name} with code {code}")
+
+            # inserting into db
+            self.db.code.insert(
+                video_id=video.video_id,
+                code=code,
+                how_long_to_proccess_in_total=time() - self._start,
+                code_state_id=code_state.value
+            )
 
     def __enter__(self):
         self._start = time()

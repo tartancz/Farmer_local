@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 from typing import TYPE_CHECKING, TypeVar
 
+from src.database.models.code import CodeModel
+
 if TYPE_CHECKING:
     from sqlite3 import Connection
     from src.database.model import Model
@@ -38,6 +40,7 @@ class Database:
         self.wolt_account = self._init_model(WoltAccountModel)
         self.wolt_token = self._init_model(WoltTokenModel)
         self.youtube_video = self._init_model(YoutubeVideoModel)
+        self.code = self._init_model(CodeModel)
 
     def _init_model(self, model: type['model_generic']) -> 'model_generic':
         return model(self._db, self.transaction)

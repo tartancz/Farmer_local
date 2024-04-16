@@ -7,8 +7,8 @@ class CodeModel(Model):
                code: str,
                how_long_to_process_in_total: float,
                code_state_id: int,
-               timestamp: float,
-               path_to_frame: str
+               timestamp: float | None = None,
+               path_to_frame: str | None = None,
                ):
         SQL = '''
             INSERT INTO code (video_id, code, how_long_to_process_in_total, code_state_id, timestamp, path_to_frame)
