@@ -37,10 +37,10 @@ class Database:
     def __init__(self, cnstr: str):
         self._db = sqlite3.connect(cnstr)
         self.transaction = Transaction(self._db)
-        self.wolt_account = self._init_model(WoltAccountModel)
-        self.wolt_token = self._init_model(WoltTokenModel)
-        self.youtube_video = self._init_model(YoutubeVideoModel)
-        self.code = self._init_model(CodeModel)
+        self.wolt_account = self._init_model(WoltAccountModel, "wolt_account")
+        self.wolt_token = self._init_model(WoltTokenModel, "wolt_token")
+        self.youtube_video = self._init_model(YoutubeVideoModel, "youtube_video")
+        self.code = self._init_model(CodeModel, "code")
 
-    def _init_model(self, model: type['model_generic']) -> 'model_generic':
-        return model(self._db, self.transaction)
+    def _init_model(self, model: type['model_generic'], table_name: str) -> 'model_generic':
+        return model(self._db, table_name, self.transaction)

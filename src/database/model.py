@@ -6,9 +6,13 @@ if TYPE_CHECKING:
 
 
 class Model:
-    def __init__(self, db: 'Connection', transaction: 'Transaction'):
+    def __init__(self, db: 'Connection', table_name: str, transaction: 'Transaction'):
+        '''
+        BE CAREFULL PARAMETER TABLE_NAME IS NOT SAFE FOR SQL INJECTION!!!
+        '''
         self._db = db
         self._cursor = db.cursor()
+        self.table_name = table_name
         self._transaction = transaction
 
     def run_sql(self, sql: str, *args):
@@ -18,4 +22,8 @@ class Model:
         self.run_sql(sql, *args)
         if not self._transaction.running_transaction:
             self._db.commit()
+
+    def get_count_of_rows(self):
+        sql = f"SELECT COUNT(*) FROM {self.table_name};"
+        return self._cursor.execute(sql).fetchone()[0]
 

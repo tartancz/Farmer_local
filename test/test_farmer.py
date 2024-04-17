@@ -19,4 +19,3 @@ def test_code_in_description(farmer, video, expected_value):
     assert len(codes) == len(expected_value)
     assert codes[0] == expected_value[0]
     assert codes[1] == expected_value[1]
-

@@ -10,7 +10,7 @@ from test.mocks.redeemer_mock import RedeemerMock
 from test.mocks.cloud_mock import mock_modal
 
 from script.migrate import migrate
-@pytest.fixture(scope='session')
+@pytest.fixture
 def farmer(tmp_path_factory) -> FarmerLocal:
     # TODO make watcher mocked...
     db = str(tmp_path_factory.mktemp('db') / "farmer.db")
