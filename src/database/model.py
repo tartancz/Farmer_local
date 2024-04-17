@@ -18,3 +18,4 @@ class Model:
         self.run_sql(sql, *args)
         if not self._transaction.running_transaction:
             self._db.commit()
+

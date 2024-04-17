@@ -65,8 +65,8 @@ class FarmerLocal:
                 continue
             oldest_exc = failures.pop(0)
             if time() - oldest_exc < 1800:
-                logger.critical(f"PROGRAM ENDING BECAUSE TOO MANY EXCEPTIONS OCCURED.")
-
+                logger.critical(f"PROGRAM ENDING BECAUSE TOO MANY EXCEPTIONS OCCURRED.")
+                exit(1)
     def __fake_return_video(self, video: str):
         video = self.watcher._yt_api.get_detailed_video(video)
         yield video
@@ -76,19 +76,22 @@ class FarmerLocal:
         logger.info("starting farming")
         for video in self.watcher.watch():
             logger.info(f"Going to process video with id {video.video_id}")
-            with self:
-                codes = self._finds_code_in_desription(video)
-                if codes:
-                    logger.info(f"Found codes in description: {codes}")
-                    self._redeem_codes_from_description(codes, video)
-                if TYPE_CHECKING:
-                    # only for type hint
-                    code_dict: CodeType  # type: ignore
-                logger.debug("Going to process video with OCR")
-                for code_dict in self.fn.remote_gen(video.video_id):
-                    print("asd", code_dict)
-                    logger.debug(f"Found code in video: {video.video_id}, with timestamp {code_dict['timestamp']}")
-                    self._redeem_codes_from_modal([code_dict], video)
+            self.process_video(video)
+
+    def process_video(self, video: 'DetailedVideoFromApi'):
+        with self:
+            codes = self._finds_code_in_desription(video)
+            if codes:
+                logger.info(f"Found codes in description: {codes}")
+                self._redeem_codes_from_description(codes, video)
+            if TYPE_CHECKING:
+                # only for type hint
+                code_dict: CodeType  # type: ignore
+            logger.debug("Going to process video with OCR")
+            for code_dict in self.fn.remote_gen(video.video_id):
+                logger.debug(f"Found code in video: {video.video_id}, with timestamp {code_dict['timestamp']}")
+                self._redeem_codes_from_modal([code_dict], video)
+
 
     def _finds_code_in_desription(self, video) -> list['str']:
         codes = []
