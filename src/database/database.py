@@ -43,4 +43,10 @@ class Database:
         self.code = self._init_model(CodeModel, "code")
 
     def _init_model(self, model: type['model_generic'], table_name: str) -> 'model_generic':
+        if not self.table_exists(table_name):
+            raise ValueError(f'Table {table_name} does not exist, cannot create model')
         return model(self._db, table_name, self.transaction)
+
+    def table_exists(self, table_name: str) -> bool:
+        query = "SELECT 1 FROM sqlite_master WHERE type='table' and name = ?"
+        return self._db.execute(query, (table_name,)).fetchone() is not None

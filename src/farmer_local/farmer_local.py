@@ -68,7 +68,7 @@ class FarmerLocal:
                 logger.critical(f"PROGRAM ENDING BECAUSE TOO MANY EXCEPTIONS OCCURRED.")
                 exit(1)
     def __fake_return_video(self, video: str):
-        video = self.watcher._yt_api.get_detailed_video(video)
+        video = self.watcher.yt_api.get_detailed_video(video)
         yield video
 
     def _run(self):
@@ -80,7 +80,7 @@ class FarmerLocal:
 
     def process_video(self, video: 'DetailedVideoFromApi'):
         with self:
-            codes = self._finds_code_in_desription(video)
+            codes = self._finds_code_in_description(video)
             if codes:
                 logger.info(f"Found codes in description: {codes}")
                 self._redeem_codes_from_description(codes, video)
@@ -93,7 +93,7 @@ class FarmerLocal:
                 self._redeem_codes_from_modal([code_dict], video)
 
 
-    def _finds_code_in_desription(self, video) -> list['str']:
+    def _finds_code_in_description(self, video) -> list['str']:
         codes = []
         for code in self.search_regex.findall(video.description):
             codes.append(code)
@@ -131,7 +131,7 @@ class FarmerLocal:
             self.db.code.insert(
                 video_id=video.video_id,
                 code=code,
-                how_long_to_proccess_in_total=time() - self._start,
+                how_long_to_process_in_total=time() - self._start,
                 code_state_id=code_state.value
             )
 

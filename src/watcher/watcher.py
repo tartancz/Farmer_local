@@ -22,7 +22,7 @@ class Watcher:
                  maximum_retries: int = 10,
                  sleep_time: int = 10,
                  ):
-        self._yt_api = youtube_api
+        self.yt_api = youtube_api
         self._db = db
         self.maximum_retries = maximum_retries
         self.sleep_time = sleep_time
@@ -33,16 +33,16 @@ class Watcher:
         will return new video when someone will upload it
         :return:
         '''
-        self._video_count = self._yt_api.get_video_count()
+        self._video_count = self.yt_api.get_video_count()
         while True:
-            sleep(SECONDS_IN_DAY / self._yt_api.maximum_checks_calls_per_day)
+            sleep(SECONDS_IN_DAY / self.yt_api.maximum_checks_calls_per_day)
             if self._is_video_count_changed():
                 video = self._get_latest_video()
                 if video:
                     logger.info(f"New video found with video_id: {video.video_id}")
                     self._db.youtube_video.insert(
                         video_id=video.video_id,
-                        channel_id=self._yt_api.channel_id,
+                        channel_id=self.yt_api.channel_id,
                         description=video.description,
                         publish_time=video.publish_time,
                         title=video.title,
@@ -53,11 +53,11 @@ class Watcher:
                     yield video
 
     def insert_latest_videos_into_db(self):
-        for video in self._yt_api.get_latest_videos_from_api(10):
+        for video in self.yt_api.get_latest_videos_from_api(10):
             try:
                 self._db.youtube_video.insert(
                     video_id=video.video_id,
-                    channel_id=self._yt_api.channel_id,
+                    channel_id=self.yt_api.channel_id,
                     publish_time=video.publish_time,
                     title=video.title,
                     url=video.url,
@@ -67,7 +67,7 @@ class Watcher:
                 pass
 
     def _is_video_count_changed(self):
-        actual_video_count = self._yt_api.get_video_count()
+        actual_video_count = self.yt_api.get_video_count()
         # if youtuber delete video
         if actual_video_count < self._video_count:
             logger.info("video count has decreased")
@@ -84,15 +84,15 @@ class Watcher:
     def _get_latest_video(self) -> DetailedVideoFromApi | None:
         logger.info("Getting latest video")
         for _ in range(self.maximum_retries):
-            video_api = self._yt_api.get_latest_videos_from_api(1)[0]
+            video_api = self.yt_api.get_latest_videos_from_api(1)[0]
             logger.info(f"Video from api returned {video_api.video_id}")
             if not self._db.youtube_video.is_video_in_db(video_id=video_api.video_id):
                 logger.debug("video is not in db, returning video from api")
-                return self._yt_api.get_detailed_video(video_id=video_api.video_id)
-            video_scrapping_id = self._yt_api.get_latest_videos_from_scrapping(1)[0]
+                return self.yt_api.get_detailed_video(video_id=video_api.video_id)
+            video_scrapping_id = self.yt_api.get_latest_videos_from_scrapping(1)[0]
             logger.info(f"Video from scrapping returned {video_api.video_id}")
             if not self._db.youtube_video.is_video_in_db(video_id=video_scrapping_id):
                 logger.debug("video is not in db, returning video from scrapping")
-                return self._yt_api.get_detailed_video(video_id=video_scrapping_id)
+                return self.yt_api.get_detailed_video(video_id=video_scrapping_id)
             sleep(self.sleep_time)
         return None
