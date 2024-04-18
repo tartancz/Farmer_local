@@ -1,17 +1,12 @@
 import time
 
 from src.redeemer.wolt import Wolt
-from src.database import Database
-import sqlite3
 import modal
 
 from src.watcher.youtube_api import YoutubeApi, DetailedVideoFromApi
 from src.database import Database
 from src.watcher.watcher import Watcher
 import logging
-import os
-import asyncio
-from aiostream import stream
 from src.farmer_local.farmer_local import FarmerLocal
 
 
