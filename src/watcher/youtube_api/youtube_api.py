@@ -71,9 +71,10 @@ class YoutubeApi:
         make request to Youtube api to get number of videos of users
         :return: number of videos on channel
         """
-        logger.debug(f"Using Channels endpoint - costs 1 units - have used {self._used_points} units - ")
         resp = self.ytb.channels().list(part="statistics", id=self.channel_id).execute()
-        return resp['items'][0]['statistics']['videoCount']
+        video_count = resp['items'][0]['statistics']['videoCount']
+        logger.debug(f"Using Channels endpoint - costs 1 units - have used {self._used_points} units - video count: {video_count}")
+        return video_count
 
     @_add_points_decorator(100)
     def get_detailed_video(self, video_id: str) -> DetailedVideoFromApi:

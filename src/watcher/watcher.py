@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from typing import Generator
 
 SECONDS_IN_DAY = 60 * 60 * 24
-logger = logger = logging.getLogger("main")
+logger = logging.getLogger("main")
 
 
 class Watcher:

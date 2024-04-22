@@ -45,20 +45,18 @@ class FarmerLocal:
         while True:
             try:
                 self._run()
-            except requests.exceptions.ConnectionError:
-                # when internet connection is lost, will start pinging to google.com until response come successfully back
-                logger.info(f"Not connection to internet")
+            except Exception as e:
+                logger.exception(e)
+                print(e)
                 while True:
+                # when internet connection is lost, will start pinging to google.com until response come successfully back
                     try:
                         requests.get("https://www.google.com")
-                    except Exception:
+                    except Exception as innerE:
+                        logger.info(f"Not connection to internet")
                         sleep(10)
                         continue
                     break
-            except Exception as e:
-                # any other is logged
-                logger.exception(e)
-                print(e)
             # if more then 5 failures in time windows program will end
             failures.append(time())
             if len(failures) < 5:
