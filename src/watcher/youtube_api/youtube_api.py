@@ -56,6 +56,8 @@ class YoutubeApi:
     def _add_points_decorator(points: int):
         def decorator(func):
             def wrapper(self, *args, **kwargs):
+                if datetime.now() >= self._reset_unit_datetime:
+                    self._used_points = 0
                 self._used_points += points
                 return func(self, *args, **kwargs)
 
