@@ -29,7 +29,7 @@ def setLogging():
     logger.addHandler(fh)
 
 def farm():
-    db = Database("db.db")
+    db = Database(DATABASE_CONNECTION_STRING)
     watcher = Watcher(
         youtube_api=YoutubeApi(api_key=YOUTUBE_API_KEY,
                                channel_name=YOUTUBE_CHANNEL_NAME,
