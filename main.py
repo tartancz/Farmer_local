@@ -16,17 +16,7 @@ from src.setting import (
     WOLT_NAME,
     DATABASE_CONNECTION_STRING
 )
-
-def setLogging():
-    logger = logging.getLogger("main")
-    logger.setLevel(logging.DEBUG)
-    # create file handler which logs even debug messages
-    fh = logging.FileHandler("app.log")
-    fh.setLevel(logging.DEBUG)
-    fr = logging.Formatter(fmt='%(asctime)s : %(levelname)s : %(filename)s : %(message)s', datefmt="%m/%d/%Y %H:%M:%S")
-    fh.setFormatter(fr)
-
-    logger.addHandler(fh)
+from src.logger import configure_loggers
 
 def farm():
     db = Database(DATABASE_CONNECTION_STRING)
@@ -49,7 +39,7 @@ def farm():
 
 
 def main():
-    setLogging()
+    configure_loggers()
     farm()
 
 

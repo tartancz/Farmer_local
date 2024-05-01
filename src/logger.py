@@ -36,7 +36,7 @@ def configure_loggers():
     logger_queue = queue.Queue(-1)
     queue_handler = QueueHandler(logger_queue)
 
-    root_logger = logging.getLogger()
+    root_logger = logging.getLogger("main")
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(queue_handler)
 
@@ -55,7 +55,7 @@ def configure_loggers():
 
     file_handler.setFormatter(
         logging.Formatter(
-            fmt="%(asctime)s - %(levelname)s - [%(funcName)s]: %(message)s",
+            fmt="%(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s",
             datefmt="%d/%m/%y %H:%M:%S",
         )
     )
