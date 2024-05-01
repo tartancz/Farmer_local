@@ -16,7 +16,7 @@ from src.watcher.errors import VideoDoNotExistException
 RESET_UNITS_TIME = time(7, tzinfo=pytz.UTC)
 SECOND_IN_DAY = 60 * 60 * 24
 
-logger = logger = logging.getLogger("main")
+logger = logging.getLogger("main")
 
 
 @dataclass
@@ -56,7 +56,7 @@ class YoutubeApi:
     def _add_points_decorator(points: int):
         def decorator(func):
             def wrapper(self, *args, **kwargs):
-                if datetime.now() >= self._reset_unit_datetime:
+                if datetime.now(tz=pytz.UTC) >= self._reset_unit_datetime:
                     self._used_points = 0
                 self._used_points += points
                 return func(self, *args, **kwargs)
