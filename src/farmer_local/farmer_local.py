@@ -115,7 +115,7 @@ class FarmerLocal:
                 video_id=video.video_id,
                 code=code_dict.get("code"),
                 timestamp=code_dict["timestamp"],
-                how_long_to_proccess_in_total=time() - self._start,
+                how_long_to_process_in_total=time() - self._start,
                 code_state_id=code_state.value,
                 path_to_frame=p.absolute()
             )
