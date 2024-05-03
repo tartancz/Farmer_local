@@ -16,7 +16,7 @@ from src.setting import (
     WOLT_NAME,
     DATABASE_CONNECTION_STRING
 )
-from src.logger import configure_loggers
+from src.logger import configure_loggers, add_loging_level
 
 def farm():
     db = Database(DATABASE_CONNECTION_STRING)
