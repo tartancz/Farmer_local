@@ -24,11 +24,14 @@ class DiscordHandler(logging.Handler):
         return f'https://discord.com/api/channels/{channel_id}/messages'
 
     def emit(self, record: logging.LogRecord):
-        requests.post(
-            self.channel_url,
-            headers={'Authorization': f'Bot {self.bot_token}'},
-            json={'content': record.msg},
-        )
+        try:
+            requests.post(
+                self.channel_url,
+                headers={'Authorization': f'Bot {self.bot_token}'},
+                json={'content': record.msg},
+            )
+        except Exception:
+            pass
 
 
 # https://stackoverflow.com/a/35804945
