@@ -117,7 +117,7 @@ class FarmerLocal:
                 timestamp=code_dict["timestamp"],
                 how_long_to_process_in_total=time() - self._start,
                 code_state_id=code_state.value,
-                path_to_frame=p.absolute()
+                path_to_frame=str(p.absolute())
             )
 
     def _redeem_codes_from_description(self, codes: list[str], video: 'DetailedVideoFromApi'):
