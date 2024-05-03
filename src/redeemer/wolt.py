@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 ACCESS_TOKEN_URL = 'https://authentication.wolt.com/v1/wauth2/access_token'
 REDEEM_DISCOUNT_URL = 'https://restaurant-api.wolt.com/v2/credit_codes/consume'
 
-logger = logger = logging.getLogger("main")
+
 
 
 @dataclass
@@ -47,7 +47,7 @@ class Wolt(Redeemer):
 
     @staticmethod
     def create_new_account(db: Database, account_name: str, refresh_token: str):
-        logger.info(f"creating new wolt account with name: {account_name}")
+
         with db.transaction:
             account_id = db.wolt_account.insert(account_name)
             token = Wolt.make_request_to_new_token(refresh_token)
@@ -57,11 +57,9 @@ class Wolt(Redeemer):
                 token.access_token,
                 token.expires_in
             )
-        logger.info(f"new wolt account with name: {account_name} was created")
 
     @staticmethod
     def make_request_to_new_token(refresh_token: str) -> WoltTokenFromResponse:
-        logger.debug("getting new wolt access_token")
         data = {
             'grant_type': 'refresh_token',
             'refresh_token': refresh_token,
@@ -88,12 +86,10 @@ class Wolt(Redeemer):
         )
 
     def redeem_code(self, code: str) -> CodeState:
-        logger.debug(f"redeeming code : {code}")
         if self.is_token_expired():
             self.get_new_token()
 
         response = self._make_request_to_code_redeem(code)
-        logger.debug(f"Response from Wolt is: {response.status_code}")
         if response.status_code == 401:
             raise NotAuthorizedException("Wolt is not authorized, use get_new_token function.")
         elif response.status_code == 404:

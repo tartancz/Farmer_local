@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from typing import Generator
 
 SECONDS_IN_DAY = 60 * 60 * 24
-logger = logging.getLogger("main")
+
 
 
 class Watcher:
@@ -39,7 +39,7 @@ class Watcher:
             if self._is_video_count_changed():
                 video = self._get_latest_video()
                 if video:
-                    logger.info(f"New video found with video_id: {video.video_id}")
+
                     self._db.youtube_video.insert(
                         video_id=video.video_id,
                         channel_id=self.yt_api.channel_id,
@@ -70,29 +70,22 @@ class Watcher:
         actual_video_count = self.yt_api.get_video_count()
         # if youtuber delete video
         if actual_video_count < self._video_count:
-            logger.info("video count has decreased")
             self._video_count = actual_video_count
             return False
 
         # new video
         if actual_video_count != self._video_count:
-            logger.info(f"video count has changed from {self._video_count} to {actual_video_count}")
             self._video_count = actual_video_count
             return True
         return False
 
     def _get_latest_video(self) -> DetailedVideoFromApi | None:
-        logger.info("Getting latest video")
         for _ in range(self.maximum_retries):
             video_api = self.yt_api.get_latest_videos_from_api(1)[0]
-            logger.info(f"Video from api returned {video_api.video_id}")
             if not self._db.youtube_video.is_video_in_db(video_id=video_api.video_id):
-                logger.debug("video is not in db, returning video from api")
                 return self.yt_api.get_detailed_video(video_id=video_api.video_id)
             video_scrapping_id = self.yt_api.get_latest_videos_from_scrapping(1)[0]
-            logger.info(f"Video from scrapping returned {video_api.video_id}")
             if not self._db.youtube_video.is_video_in_db(video_id=video_scrapping_id):
-                logger.debug("video is not in db, returning video from scrapping")
                 return self.yt_api.get_detailed_video(video_id=video_scrapping_id)
             sleep(self.sleep_time)
         return None

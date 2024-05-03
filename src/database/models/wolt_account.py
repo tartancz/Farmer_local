@@ -6,7 +6,7 @@ from datetime import datetime
 from src.database.model import Model
 from src.database.errors import RowDontExistException
 
-logger = logger = logging.getLogger("main")
+
 
 
 @dataclass
@@ -22,7 +22,6 @@ class WoltAccountModel(Model):
             INSERT INTO wolt_account (account_name)
             VALUES (?);
         '''
-        logger.debug(f"inserting WoltAccount to db with account_name: {account_name}")
         self.run_sql_and_commit(insert_query, [account_name])
 
         return self._cursor.lastrowid  # type: ignore
@@ -34,11 +33,9 @@ class WoltAccountModel(Model):
             WHERE id = ?
             LIMIT 1;
         '''
-        logger.debug(f"getting WoltAccount by video_id: {account_id}")
         self.run_sql(select_query, [account_id])
         account_row = self._cursor.fetchone()
         if not account_row:
-            logger.debug(f"WoltAccount with video_id {account_id} was not found")
             raise RowDontExistException(f"WoltAccount with video_id {account_id} do not exist")
         return WoltAccount(*account_row)
 
@@ -49,10 +46,8 @@ class WoltAccountModel(Model):
             WHERE account_name=?
             LIMIT 1;
         '''
-        logger.debug(f"getting WoltAccount by account_name: {account_name}")
         self.run_sql(select_query, [account_name])
         account_row = self._cursor.fetchone()
         if not account_row:
-            logger.debug(f"WoltAccount with account_name {account_name} was not found")
             raise RowDontExistException(f"WoltAccount with account_name {account_name} do not exist")
         return WoltAccount(*account_row)

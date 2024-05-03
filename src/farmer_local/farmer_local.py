@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from modal.functions import Function
 
 
-logger = logging.getLogger("main")
+
 
 
 
@@ -46,14 +46,13 @@ class FarmerLocal:
             try:
                 self._run()
             except Exception as e:
-                logger.exception(e)
+                #TODO logg exception
                 print(e)
                 while True:
                 # when internet connection is lost, will start pinging to google.com until response come successfully back
                     try:
                         requests.get("https://www.google.com")
                     except Exception as innerE:
-                        logger.info(f"Not connection to internet")
                         sleep(10)
                         continue
                     break
@@ -63,7 +62,7 @@ class FarmerLocal:
                 continue
             oldest_exc = failures.pop(0)
             if time() - oldest_exc < 1800:
-                logger.critical(f"PROGRAM ENDING BECAUSE TOO MANY EXCEPTIONS OCCURRED.")
+
                 exit(1)
     def __fake_return_video(self, video: str):
         video = self.watcher.yt_api.get_detailed_video(video)
@@ -71,23 +70,18 @@ class FarmerLocal:
 
     def _run(self):
         self.watcher.insert_latest_videos_into_db()
-        logger.info("starting farming")
         for video in self.watcher.watch():
-            logger.info(f"Going to process video with id {video.video_id}")
             self.process_video(video)
 
     def process_video(self, video: 'DetailedVideoFromApi'):
         with self:
             codes = self._finds_code_in_description(video)
             if codes:
-                logger.info(f"Found codes in description: {codes}")
                 self._redeem_codes_from_description(codes, video)
             if TYPE_CHECKING:
                 # only for type hint
                 code_dict: CodeType  # type: ignore
-            logger.debug("Going to process video with OCR")
             for code_dict in self.fn.remote_gen(video.video_id):
-                logger.debug(f"Found code in video: {video.video_id}, with timestamp {code_dict['timestamp']}")
                 self._redeem_codes_from_modal([code_dict], video)
 
 
@@ -101,7 +95,6 @@ class FarmerLocal:
         for code_dict in codes:
             code = code_dict["code"]
             code_state = self.redeemer.redeem_code(code)
-            logger.info(f"Code returned {code_state.name} with code {code_dict['code']}")
             # TODO how long took from running ocr modal
 
             # write image from modal
@@ -123,7 +116,6 @@ class FarmerLocal:
     def _redeem_codes_from_description(self, codes: list[str], video: 'DetailedVideoFromApi'):
         for code in codes:
             code_state = self.redeemer.redeem_code(code)
-            logger.info(f"Code returned {code_state.name} with code {code}")
 
             # inserting into db
             self.db.code.insert(
