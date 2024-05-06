@@ -79,6 +79,7 @@ class YoutubeApi:
 
     @_add_points_decorator(100)
     def get_detailed_video(self, video_id: str) -> DetailedVideoFromApi:
+        logger.debug(f'getting detailed video {video_id} and actual used points are {self._used_points}')
         resp = self.ytb.videos().list(part="snippet,contentDetails", id=video_id).execute()
         if len(resp["items"]) < 1:
             raise VideoDoNotExistException(f"VideoFromApi with video_id {video_id} do not exist")

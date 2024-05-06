@@ -72,11 +72,11 @@ class FarmerLocal:
         with self:
             codes = self._finds_code_in_description(video)
             if codes:
-                #TODO CONTINUE LOGGING HERE
                 self._redeem_codes_from_description(codes, video)
             if TYPE_CHECKING:
                 # only for type hint
                 code_dict: CodeType  # type: ignore
+            logger.info("Processing video with remote_gen")
             for code_dict in self.fn.remote_gen(video.video_id):
                 self._redeem_codes_from_modal([code_dict], video)
 
@@ -95,6 +95,7 @@ class FarmerLocal:
         for code_dict in codes:
             code = code_dict["code"]
             code_state = self.redeemer.redeem_code(code)
+            logger.discord(f"WOLT returned codeState {code_state.name} with code {code} using videoProcessing")
             # TODO how long took from running ocr modal
 
             # write image from modal
@@ -102,6 +103,8 @@ class FarmerLocal:
             p.mkdir(exist_ok=True, parents=True)
             p = p / f"{code_dict['code']}.jpg"
             p.write_bytes(code_dict["frame"])
+
+            logger.info(f"saving image of code to {p.absolute()}")
 
             #inserting into db
             self.db.code.insert(
@@ -116,7 +119,7 @@ class FarmerLocal:
     def _redeem_codes_from_description(self, codes: list[str], video: 'DetailedVideoFromApi'):
         for code in codes:
             code_state = self.redeemer.redeem_code(code)
-
+            logger.discord(f"WOLT returned codeState {code_state.name} with code {code} from description")
             # inserting into db
             self.db.code.insert(
                 video_id=video.video_id,
