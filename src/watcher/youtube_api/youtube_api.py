@@ -1,6 +1,6 @@
 from datetime import datetime, time, timedelta
 import logging
-import os
+
 import re
 from dataclasses import dataclass
 import json
@@ -11,7 +11,10 @@ import googleapiclient.discovery
 import requests
 from bs4 import BeautifulSoup
 
+from src.logger import LOGGER_NAME
 from src.watcher.errors import VideoDoNotExistException
+
+logger = logging.getLogger(LOGGER_NAME)
 
 RESET_UNITS_TIME = time(7, tzinfo=pytz.UTC)
 SECOND_IN_DAY = 60 * 60 * 24
@@ -71,6 +74,7 @@ class YoutubeApi:
         """
         resp = self.ytb.channels().list(part="statistics", id=self.channel_id).execute()
         video_count = resp['items'][0]['statistics']['videoCount']
+        logger.debug(f'video count is {video_count} and used points is {self._used_points}')
         return video_count
 
     @_add_points_decorator(100)
@@ -91,6 +95,7 @@ class YoutubeApi:
 
     @_add_points_decorator(100)
     def get_latest_videos_from_api(self, count=1) -> list[VideoFromApi]:
+        logger.debug(f"getting latest videos from api {count} and actual used points are {self._used_points}")
         resp = self.ytb.search().list(key=self.API_KEY, channelId=self.channel_id, part="snippet",
                                       order="date",
                                       maxResults=count).execute()
