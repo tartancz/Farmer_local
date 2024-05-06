@@ -6,8 +6,6 @@ from datetime import datetime
 from src.database.model import Model
 from src.database.errors import RowDontExistException
 
-logger = logger = logging.getLogger("main")
-
 
 @dataclass
 class WoltToken:
@@ -25,8 +23,6 @@ class WoltTokenModel(Model):
             INSERT INTO wolt_token (account_id, refresh_token, access_token, expires_in)
             VALUES (?, ?, ?, ?);
         '''
-        logger.debug(
-            f"inserting WoltToken to db with account_id: {account_id}, refresh_token: {refresh_token}, token: {access_token}, expires_in: {expires_in}")
         self.run_sql_and_commit(insert_query, [account_id, refresh_token, access_token, expires_in])
         return self._cursor.lastrowid  # type: ignore
 
@@ -37,11 +33,9 @@ class WoltTokenModel(Model):
             WHERE id = ?
             LIMIT 1;
         '''
-        logger.debug(f"getting WoltToken by video_id: {token_id}")
         self._cursor.execute(select_query, [token_id])
         token_row = self._cursor.fetchone()
         if not token_row:
-            logger.debug(f"WoltToken with video_id {token_id} was not found")
             raise RowDontExistException(f"WoltToken with video_id {token_id} do not exist")
         return WoltToken(*token_row)
 
@@ -53,10 +47,8 @@ class WoltTokenModel(Model):
             ORDER BY created DESC
             LIMIT 1;
         '''
-        logger.debug(f"getting latest WoltToken")
         self._cursor.execute(select_query, [account_id])
         token_row = self._cursor.fetchone()
         if not token_row:
-            logger.debug(f"WoltToken was not found")
             raise RowDontExistException(f"WoltToken do not exist")
         return WoltToken(*token_row)

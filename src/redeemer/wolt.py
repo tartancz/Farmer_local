@@ -9,6 +9,7 @@ import requests
 from src.database import Database, RowDontExistException
 from src.redeemer.errors import RefreshAuthFailedException, NotAuthorizedException
 from src.redeemer.redeemer import Redeemer, CodeState
+from src.logger import LOGGER_NAME
 
 if TYPE_CHECKING:
     from requests import Response
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 ACCESS_TOKEN_URL = 'https://authentication.wolt.com/v1/wauth2/access_token'
 REDEEM_DISCOUNT_URL = 'https://restaurant-api.wolt.com/v2/credit_codes/consume'
 
-logger = logger = logging.getLogger("main")
+logger = logging.getLogger(LOGGER_NAME)
 
 
 @dataclass
@@ -37,6 +38,7 @@ class Wolt(Redeemer):
             print("account was not found in database, please run create_wolt_account.py script to create new account.")
             exit(1)
         # get latest token for account
+        logger.info(f"got Wolt account name: {self.account.name}")
         token = self._db.wolt_token.get_latest_token(self.account.id)
         self.actual_token = Wolt.make_request_to_new_token(token.refresh_token)
         self._db.wolt_token.insert(
@@ -47,7 +49,7 @@ class Wolt(Redeemer):
 
     @staticmethod
     def create_new_account(db: Database, account_name: str, refresh_token: str):
-        logger.info(f"creating new wolt account with name: {account_name}")
+
         with db.transaction:
             account_id = db.wolt_account.insert(account_name)
             token = Wolt.make_request_to_new_token(refresh_token)
@@ -57,11 +59,9 @@ class Wolt(Redeemer):
                 token.access_token,
                 token.expires_in
             )
-        logger.info(f"new wolt account with name: {account_name} was created")
 
     @staticmethod
     def make_request_to_new_token(refresh_token: str) -> WoltTokenFromResponse:
-        logger.debug("getting new wolt access_token")
         data = {
             'grant_type': 'refresh_token',
             'refresh_token': refresh_token,
@@ -88,12 +88,11 @@ class Wolt(Redeemer):
         )
 
     def redeem_code(self, code: str) -> CodeState:
-        logger.debug(f"redeeming code : {code}")
         if self.is_token_expired():
+            logger.debug("token is expired, getting new...")
             self.get_new_token()
 
         response = self._make_request_to_code_redeem(code)
-        logger.debug(f"Response from Wolt is: {response.status_code}")
         if response.status_code == 401:
             raise NotAuthorizedException("Wolt is not authorized, use get_new_token function.")
         elif response.status_code == 404:
@@ -110,6 +109,7 @@ class Wolt(Redeemer):
         return CodeState.UNKNOWN_ERROR  # type: ignore
 
     def _make_request_to_code_redeem(self, code: str) -> 'Response':
+        logger.info(f"redeming code {code}")
         headers = {
             'accept': 'application/json, text/plain, */*',
             'authorization': f'Bearer {self.actual_token.access_token}',

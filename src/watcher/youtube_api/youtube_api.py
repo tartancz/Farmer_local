@@ -1,6 +1,6 @@
 from datetime import datetime, time, timedelta
 import logging
-import os
+
 import re
 from dataclasses import dataclass
 import json
@@ -11,12 +11,13 @@ import googleapiclient.discovery
 import requests
 from bs4 import BeautifulSoup
 
+from src.logger import LOGGER_NAME
 from src.watcher.errors import VideoDoNotExistException
+
+logger = logging.getLogger(LOGGER_NAME)
 
 RESET_UNITS_TIME = time(7, tzinfo=pytz.UTC)
 SECOND_IN_DAY = 60 * 60 * 24
-
-logger = logging.getLogger("main")
 
 
 @dataclass
@@ -73,12 +74,12 @@ class YoutubeApi:
         """
         resp = self.ytb.channels().list(part="statistics", id=self.channel_id).execute()
         video_count = resp['items'][0]['statistics']['videoCount']
-        logger.debug(f"Using Channels endpoint - costs 1 units - have used {self._used_points} units - video count: {video_count}")
+        logger.debug(f'video count is {video_count} and used points is {self._used_points}')
         return video_count
 
     @_add_points_decorator(100)
     def get_detailed_video(self, video_id: str) -> DetailedVideoFromApi:
-        logger.debug(f"Using VIDEO LIST - costs 100 units - have used {self._used_points} units - ")
+        logger.debug(f'getting detailed video {video_id} and actual used points are {self._used_points}')
         resp = self.ytb.videos().list(part="snippet,contentDetails", id=video_id).execute()
         if len(resp["items"]) < 1:
             raise VideoDoNotExistException(f"VideoFromApi with video_id {video_id} do not exist")
@@ -95,7 +96,7 @@ class YoutubeApi:
 
     @_add_points_decorator(100)
     def get_latest_videos_from_api(self, count=1) -> list[VideoFromApi]:
-        logger.debug(f"Using SEARCH LIST - costs 100 units - have used {self._used_points} units - , count: {count}")
+        logger.debug(f"getting latest videos from api {count} and actual used points are {self._used_points}")
         resp = self.ytb.search().list(key=self.API_KEY, channelId=self.channel_id, part="snippet",
                                       order="date",
                                       maxResults=count).execute()
@@ -109,7 +110,6 @@ class YoutubeApi:
                 publish_time=YoutubeApi._parse_datetime(item["snippet"]["publishedAt"]),
                 title=item["snippet"]["title"]
             )
-            logger.debug(f"latest uploaded videos: {video.url} published at {video.publish_time}")
             videos.append(video)
         return videos
 
