@@ -1,0 +1,9 @@
+modal>=0.62.21
+requests>=2.31.0
+pytz>=2024.1
+python-dateutil>=2.8.2
+aiostream>=0.5.2
+google-api-python-client>=2.125.0
+beautifulsoup4>=4.12.3
+pytest>=8.1.1
+python-dotenv>=1.0.1
