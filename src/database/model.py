@@ -30,4 +30,3 @@ class Model:
     def get_count_of_rows(self):
         sql = f"SELECT COUNT(*) FROM {self.table_name};"
         return self._cursor.execute(sql).fetchone()[0]
-

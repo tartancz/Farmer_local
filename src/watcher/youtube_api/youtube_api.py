@@ -1,15 +1,14 @@
-from datetime import datetime, time, timedelta
+import json
 import logging
-
 import re
 from dataclasses import dataclass
-import json
+from datetime import datetime, time, timedelta
 
-import pytz
-from dateutil import parser
 import googleapiclient.discovery
+import pytz
 import requests
 from bs4 import BeautifulSoup
+from dateutil import parser
 
 from src.logger import LOGGER_NAME
 from src.watcher.errors import VideoDoNotExistException

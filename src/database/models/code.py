@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from dataclasses import dataclass
+from datetime import datetime
 
 from src.database.model import Model
 
@@ -16,6 +15,7 @@ class Code:
     timestamp: float = None
     path_to_frame: str = None
 
+
 class CodeModel(Model):
     def insert(self,
                video_id: int,
@@ -29,7 +29,8 @@ class CodeModel(Model):
             INSERT INTO {self.table_name} (video_id, code, how_long_to_process_in_total, code_state_id, timestamp, path_to_frame)
             VALUES (?, ?, ?, ?, ?, ?)
         '''
-        self.run_sql_and_commit(SQL, [video_id, code, how_long_to_process_in_total, code_state_id, timestamp, path_to_frame])
+        self.run_sql_and_commit(SQL,
+                                [video_id, code, how_long_to_process_in_total, code_state_id, timestamp, path_to_frame])
 
     def get_codes_by_video_id(self, video_id: int) -> list[Code]:
         sql = f'''
@@ -41,13 +42,13 @@ class CodeModel(Model):
         result = []
         for row in data:
             result.append(Code(
-                id= row[0],
-            video_id= row[1],
-            code= row[2],
-            how_long_to_process_in_total= row[3],
-            code_state_id= row[4],
-            created= row[5],
-            timestamp= row[6],
-            path_to_frame= row[7],
+                id=row[0],
+                video_id=row[1],
+                code=row[2],
+                how_long_to_process_in_total=row[3],
+                code_state_id=row[4],
+                created=row[5],
+                timestamp=row[6],
+                path_to_frame=row[7],
             ))
         return result

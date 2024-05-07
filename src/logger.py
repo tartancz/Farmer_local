@@ -1,14 +1,16 @@
 import logging
-import queue
-from pathlib import Path
 import os
+import queue
 from logging.handlers import QueueHandler, TimedRotatingFileHandler, QueueListener
+from pathlib import Path
+
 import requests
 
 from src.setting import LOGGING_PATH_FOLDER, DISCORD_CHANNEL, DISCORD_BOT_ID
 
 DISCORD_LEVEL = logging.INFO + 5
 LOGGER_NAME = "main"
+
 
 class DiscordHandler(logging.Handler):
     def __init__(self,
@@ -69,7 +71,7 @@ def configure_loggers():
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(queue_handler)
 
-    #mkdir for logging
+    # mkdir for logging
     log_path = os.path.join(LOGGING_PATH_FOLDER, "logs")
     Path(log_path).mkdir(parents=True, exist_ok=True)
 
@@ -100,7 +102,3 @@ def configure_loggers():
         logger_queue, file_handler, discord_handler, respect_handler_level=True
     )
     queue_listener.start()
-
-
-
-

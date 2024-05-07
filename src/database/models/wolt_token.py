@@ -1,10 +1,8 @@
 from dataclasses import dataclass
-import logging
-import os
 from datetime import datetime
 
-from src.database.model import Model
 from src.database.errors import RowDontExistException
+from src.database.model import Model
 
 
 @dataclass

@@ -1,12 +1,11 @@
 import logging
 import sqlite3
 from time import sleep
+from typing import TYPE_CHECKING
 
-from src.watcher.youtube_api import YoutubeApi, DetailedVideoFromApi
 from src.database import Database
 from src.logger import LOGGER_NAME
-
-from typing import TYPE_CHECKING
+from src.watcher.youtube_api import YoutubeApi, DetailedVideoFromApi
 
 if TYPE_CHECKING:
     from typing import Generator
@@ -14,6 +13,7 @@ if TYPE_CHECKING:
 SECONDS_IN_DAY = 60 * 60 * 24
 
 logger = logging.getLogger(LOGGER_NAME)
+
 
 class Watcher:
     def __init__(self,

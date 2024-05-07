@@ -32,12 +32,12 @@ CREATE TABLE "code"
 (
     "id"                           integer PRIMARY KEY,
     "video_id"                     nvarchar REFERENCES youtube_video (video_id) NOT NULL,
-    "code"                         NVARCHAR                                    NOT NULL,
-    "how_long_to_process_in_total" float                                       NOT NULL,
-    "code_state_id"                REFERENCES code_state (id)                  NOT NULL,
-    "timestamp"                    float                                       NULL,
-    "path_to_frame"                NVARCHAR                                    NULL,
-    "created"                      timestamp DEFAULT CURRENT_TIMESTAMP         NOT NULL
+    "code"                         NVARCHAR                                     NOT NULL,
+    "how_long_to_process_in_total" float                                        NOT NULL,
+    "code_state_id" REFERENCES code_state (id)                                  NOT NULL,
+    "timestamp"                    float                                        NULL,
+    "path_to_frame"                NVARCHAR                                     NULL,
+    "created"                      timestamp DEFAULT CURRENT_TIMESTAMP          NOT NULL
 
 );
 

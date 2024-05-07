@@ -1,13 +1,12 @@
 import logging
 import re
-from time import time, sleep
 from pathlib import Path
+from time import time, sleep
+from typing import TYPE_CHECKING
 
 import requests
 
 from src.logger import LOGGER_NAME
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.watcher.youtube_api import DetailedVideoFromApi
@@ -44,7 +43,7 @@ class FarmerLocal:
             except Exception as e:
                 logger.error(e)
                 while True:
-                # when internet connection is lost, will start pinging to google.com until response come successfully back
+                    # when internet connection is lost, will start pinging to google.com until response come successfully back
                     try:
                         requests.get("https://www.google.com")
                     except Exception as innerE:
@@ -80,7 +79,6 @@ class FarmerLocal:
             for code_dict in self.fn.remote_gen(video.video_id):
                 self._redeem_codes_from_modal([code_dict], video)
 
-
     def _finds_code_in_description(self, video) -> list['str']:
         codes = []
         logger.debug(f"trying to find codes in description")
@@ -106,7 +104,7 @@ class FarmerLocal:
 
             logger.info(f"saving image of code to {p.absolute()}")
 
-            #inserting into db
+            # inserting into db
             self.db.code.insert(
                 video_id=video.video_id,
                 code=code_dict.get("code"),
