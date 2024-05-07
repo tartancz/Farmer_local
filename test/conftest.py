@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from src.farmer_local import FarmerLocal
-from src.database.database import Database
+from src.database import Database
 
 
 from test.mocks.redeemer_mock import RedeemerMock

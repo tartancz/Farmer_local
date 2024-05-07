@@ -1,11 +1,8 @@
 import sqlite3
 
-from src.database.models import WoltAccountModel, WoltTokenModel, YoutubeVideoModel
-from dataclasses import dataclass
+from src.database.models import WoltAccountModel, WoltTokenModel, YoutubeVideoModel, CodeModel
 
 from typing import TYPE_CHECKING, TypeVar
-
-from src.database.models.code import CodeModel
 
 if TYPE_CHECKING:
     from sqlite3 import Connection

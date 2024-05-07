@@ -1,5 +1,4 @@
 import logging
-import os
 from datetime import timedelta, datetime
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
@@ -7,8 +6,8 @@ from dataclasses import dataclass
 import requests
 
 from src.database import Database, RowDontExistException
-from src.redeemer.errors import RefreshAuthFailedException, NotAuthorizedException
 from src.redeemer.redeemer import Redeemer, CodeState
+from src.redeemer.errors import RefreshAuthFailedException, NotAuthorizedException
 from src.logger import LOGGER_NAME
 
 if TYPE_CHECKING:
