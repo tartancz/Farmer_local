@@ -45,7 +45,7 @@ class CodeModel(Model):
             video_id= row[1],
             code= row[2],
             how_long_to_process_in_total= row[3],
-            code_state= row[4],
+            code_state_id= row[4],
             created= row[5],
             timestamp= row[6],
             path_to_frame= row[7],

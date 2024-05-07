@@ -1,10 +1,9 @@
-from pathlib import Path
-from datetime import datetime
+
 import pytest
 
 from src.farmer_local import FarmerLocal
 from src.database import Database
-
+from src.logger import add_loging_level, DISCORD_LEVEL
 
 from test.mocks.redeemer_mock import RedeemerMock
 from test.mocks.cloud_mock import mock_modal
@@ -23,3 +22,7 @@ def farmer(tmp_path_factory) -> FarmerLocal:
         db=Database(db)
     )
     return f
+
+@pytest.fixture(scope="session", autouse=True)
+def set_logging():
+    add_loging_level("DISCORD", DISCORD_LEVEL)
