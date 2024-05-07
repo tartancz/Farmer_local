@@ -54,10 +54,10 @@ def test_finds_code_in_description(farmer, video, expected_value):
                                          video_lenght=24.6,
                                          title="Some video title"),
                                      [
-                                         CodeState.SUCCESSFULLY_REDEEM,
-                                         CodeState.BAD_CODE,
-                                         CodeState.SUCCESSFULLY_REDEEM,
-                                         CodeState.ALREADY_TAKEN
+                                         CodeState.SUCCESSFULLY_REDEEM.value,
+                                         CodeState.BAD_CODE.value,
+                                         CodeState.SUCCESSFULLY_REDEEM.value,
+                                         CodeState.ALREADY_TAKEN.value
                                      ]
                              )
 
@@ -68,7 +68,7 @@ def test_redeem_codes_from_description(farmer, codes, video, expected_value):
     assert farmer.db.code.get_count_of_rows() == 4
 
     for i, code in enumerate(farmer.db.code.get_codes_by_video_id(video.video_id)):
-        assert code.code_state == expected_value[i]
+        assert code.code_state_id == expected_value[i]
         assert code.code == codes[i]
         assert code.video_id == video.video_id
         assert code.id == i + 1

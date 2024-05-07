@@ -3,7 +3,7 @@ from datetime import datetime
 from dataclasses import dataclass
 
 from src.database.model import Model
-from src.redeemer.redeemer import CodeState
+
 
 @dataclass
 class Code:
@@ -11,7 +11,7 @@ class Code:
     video_id: int
     code: str
     how_long_to_process_in_total: float
-    code_state: CodeState
+    code_state_id: int
     created: datetime = None
     timestamp: float = None
     path_to_frame: str = None
@@ -45,7 +45,7 @@ class CodeModel(Model):
             video_id= row[1],
             code= row[2],
             how_long_to_process_in_total= row[3],
-            code_state= CodeState(row[4]),
+            code_state= row[4],
             created= row[5],
             timestamp= row[6],
             path_to_frame= row[7],
