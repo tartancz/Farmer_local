@@ -37,7 +37,7 @@ class Wolt(Redeemer):
             print("account was not found in database, please run create_wolt_account.py script to create new account.")
             exit(1)
         # get latest token for account
-        logger.info(f"got Wolt account name: {self.account.name}")
+        logger.info(f"got Wolt account name: {self.account.account_name}")
         token = self._db.wolt_token.get_latest_token(self.account.id)
         self.actual_token = Wolt.make_request_to_new_token(token.refresh_token)
         self._db.wolt_token.insert(
