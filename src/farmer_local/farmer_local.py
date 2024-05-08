@@ -77,7 +77,10 @@ class FarmerLocal:
                 code_dict: CodeType  # type: ignore
             logger.info("Processing video with remote_gen")
             for code_dict in self.fn.remote_gen(video.video_id):
-                self._redeem_codes_from_modal([code_dict], video)
+                try:
+                    self._redeem_codes_from_modal([code_dict], video)
+                except Exception as E:
+                    logger.error(E)
 
     def _finds_code_in_description(self, video) -> list['str']:
         codes = []
