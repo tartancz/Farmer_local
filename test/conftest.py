@@ -18,7 +18,7 @@ def farmer(tmp_path_factory) -> FarmerLocal:
         watcher=None,
         redeemer=RedeemerMock(),
         search_regex=r'123456789|5555',
-        fn=mock_modal,
+        process_video_function=mock_modal,
         db=Database(db)
     )
     return f

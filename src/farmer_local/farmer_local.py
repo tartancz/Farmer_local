@@ -2,7 +2,7 @@ import logging
 import re
 from pathlib import Path
 from time import time, sleep
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Generator
 
 import requests
 
@@ -24,13 +24,13 @@ class FarmerLocal:
                  watcher: 'Watcher',
                  redeemer: 'Redeemer',
                  db: 'Database',
-                 fn: 'Function',
+                 process_video_function: Callable[['DetailedVideoFromApi'], Generator['CodeType', None, None]],
                  search_regex: str
                  ):
         self.watcher = watcher
         self.redeemer = redeemer
         self.db = db
-        self.fn = fn
+        self.process_video_function = process_video_function
         self.search_regex = re.compile(search_regex)
         self._start: float | None = None
 
@@ -76,7 +76,7 @@ class FarmerLocal:
                 # only for type hint
                 code_dict: CodeType  # type: ignore
             logger.info("Processing video with remote_gen")
-            for code_dict in self.fn.remote_gen(video.video_id):
+            for code_dict in self.process_video_function(video):
                 try:
                     self._redeem_codes_from_modal([code_dict], video)
                 except Exception as E:
