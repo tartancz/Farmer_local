@@ -92,12 +92,14 @@ class Watcher:
             if not self._db.youtube_video.is_video_in_db(video_id=video_api.video_id):
                 logger.discord(f"NEW VIDEO FROM API WAS FOUND! id: {video_api.video_id}")
                 return self.yt_api.get_detailed_video(video_id=video_api.video_id)
-            video_scrapping_id = self.yt_api.get_latest_videos_from_scrapping(1)[0]
-            logger.info(f'SCRAPING returned {video_api.video_id} as last video')
-            if not self._db.youtube_video.is_video_in_db(video_id=video_scrapping_id):
-                logger.discord(f"NEW VIDEO FROM SCRAPING WAS FOUND! id: {video_scrapping_id}")
-                return self.yt_api.get_detailed_video(video_id=video_scrapping_id)
-            logger.info(f'Video was not found going to sleep and try again')
-            sleep(self.sleep_time)
+            SCRAPING_TRIES = 5
+            for _ in range(SCRAPING_TRIES):
+                video_scrapping_id = self.yt_api.get_latest_videos_from_scrapping(1)[0]
+                logger.info(f'SCRAPING returned {video_api.video_id} as last video')
+                if not self._db.youtube_video.is_video_in_db(video_id=video_scrapping_id):
+                    logger.discord(f"NEW VIDEO FROM SCRAPING WAS FOUND! id: {video_scrapping_id}")
+                    return self.yt_api.get_detailed_video(video_id=video_scrapping_id)
+                logger.info(f'Video was not found going to sleep and try again')
+                sleep(self.sleep_time / SCRAPING_TRIES)
         logger.discord(f"Video was NOT FOUND!")
         return None
