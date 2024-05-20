@@ -41,7 +41,7 @@ class FarmerLocal:
                 logger.discord("Starting Farmer Local")
                 self._run()
             except Exception as e:
-                logger.error(e)
+                logger.exception(e)
                 while True:
                     # when internet connection is lost, will start pinging to google.com until response come successfully back
                     try:
