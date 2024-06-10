@@ -24,7 +24,10 @@ class WoltTokenFromResponse:
     refresh_token: str
     access_token: str
     expires_in: int
-    created: datetime = datetime.utcnow()
+    created: datetime = None
+
+    def __post_init__(self):
+        self.created = datetime.utcnow()
 
 
 class Wolt(Redeemer):
