@@ -14,7 +14,7 @@ class ModalVP(VideoProcessor):
                  ):
         self.download_video_func = modal.Function.lookup(app_name, process_video_name_function)
 
-    def get_codes(self, video: DetailedVideoFromApi) -> Generator[CodeType, None]:
+    def get_codes(self, video: DetailedVideoFromApi) -> Generator[CodeType, None, None]:
         yield from self.download_video_func.remote_gen(video.video_id)
 
     def shutdown_processor(self):
