@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Callable, Generator
 import requests
 
 from src.logger import LOGGER_NAME
+from src.videoProcessor.video_processor import VideoProcessor
 
 if TYPE_CHECKING:
     from src.watcher.youtube_api import DetailedVideoFromApi
@@ -14,23 +15,20 @@ if TYPE_CHECKING:
     from src.database import Database
     from src.redeemer import Redeemer
     from src.cloud_types import CodeType
-    from modal.functions import Function
 
 logger = logging.getLogger(LOGGER_NAME)
-
-
 class FarmerLocal:
     def __init__(self,
                  watcher: 'Watcher',
                  redeemer: 'Redeemer',
                  db: 'Database',
-                 process_video_function: Callable[['DetailedVideoFromApi'], Generator['CodeType', None, None]],
+                 vp: 'VideoProcessor',
                  search_regex: str
                  ):
         self.watcher = watcher
         self.redeemer = redeemer
         self.db = db
-        self.process_video_function = process_video_function
+        self.vp = vp
         self.search_regex = re.compile(search_regex)
         self._start: float | None = None
 
@@ -52,6 +50,8 @@ class FarmerLocal:
                         continue
                     logger.info("internet connection established")
                     break
+            finally:
+                self.vp.shutdown_processor()
             # if more then 5 failures in time windows program will end
             failures.append(time())
             if len(failures) < 5:
@@ -63,8 +63,9 @@ class FarmerLocal:
 
     def _run(self):
         self.watcher.insert_latest_videos_into_db()
-        for video in self.watcher.watch():
+        for video in self.watcher.watch(self.vp.boot_up_processor):
             self.process_video(video)
+            self.vp.shutdown_processor()
 
     def process_video(self, video: 'DetailedVideoFromApi'):
         logger.info(f"Going to process video {video.title}")
@@ -76,7 +77,7 @@ class FarmerLocal:
                 # only for type hint
                 code_dict: CodeType  # type: ignore
             logger.info("Processing video with remote_gen")
-            for code_dict in self.process_video_function(video):
+            for code_dict in self.vp.get_codes(video):
                 try:
                     self._redeem_codes_from_modal([code_dict], video)
                 except Exception as E:

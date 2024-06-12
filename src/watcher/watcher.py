@@ -1,7 +1,7 @@
 import logging
 import sqlite3
 from time import sleep
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from src.database import Database
 from src.logger import LOGGER_NAME
@@ -28,7 +28,7 @@ class Watcher:
         self.sleep_time = sleep_time
         self._video_count = 0
 
-    def watch(self) -> 'Generator[DetailedVideoFromApi, None, None]':
+    def watch(self, cb_video_changed: Callable) -> 'Generator[DetailedVideoFromApi, None, None]':
         '''
         will return new video when someone will upload it
         :return:
@@ -38,6 +38,7 @@ class Watcher:
         while True:
             sleep(SECONDS_IN_DAY / self.yt_api.maximum_checks_calls_per_day)
             if self._is_video_count_changed():
+                cb_video_changed()
                 video = self._get_latest_video()
                 if video:
                     logger.info(f'inserting video into db id: {video.video_id} and title: {video.title}')
