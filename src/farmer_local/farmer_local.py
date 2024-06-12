@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable, Generator
 import requests
 
 from src.logger import LOGGER_NAME
-from src.videoProcessor.video_processor import VideoProcessor
+from src.video_processor.video_processor import VideoProcessor
 
 if TYPE_CHECKING:
     from src.watcher.youtube_api import DetailedVideoFromApi

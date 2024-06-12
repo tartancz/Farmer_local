@@ -3,7 +3,7 @@ from typing import Generator
 import modal
 
 from src.cloud_types import CodeType
-from src.videoProcessor.video_processor import VideoProcessor
+from src.video_processor.video_processor import VideoProcessor
 from src.watcher.youtube_api import DetailedVideoFromApi
 
 
