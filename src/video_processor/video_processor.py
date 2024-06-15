@@ -11,8 +11,11 @@ class VideoProcessor(ABC):
     def get_codes(self, video: DetailedVideoFromApi) -> Generator[CodeType, None, None]:
         pass
 
-    def boot_up_processor(self):
+    def delete_video(self, video: DetailedVideoFromApi):
         pass
 
-    def shutdown_processor(self):
+    def prewarm_processor(self, count: int = 40):
+        pass
+
+    def downwarm_processor(self):
         pass

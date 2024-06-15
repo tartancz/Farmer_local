@@ -11,7 +11,8 @@ from src.setting import (
     YOUTUBE_API_KEY,
     YOUTUBE_CHANNEL_ID,
     YOUTUBE_CHANNEL_NAME,
-    MODAL_FUNCTION_NAME,
+    MODAL_PROCESS_FUNCTION_NAME,
+    MODAL_PROCESS_DOWNLOAD_NAME,
     MODAL_APP_NAME,
     WOLT_NAME,
     DATABASE_CONNECTION_STRING
@@ -35,7 +36,7 @@ def farm():
         watcher=watcher,
         redeemer=wolt,
         db=db,
-        vp=ModalVP(MODAL_APP_NAME, MODAL_FUNCTION_NAME),
+        vp=ModalVP(MODAL_APP_NAME, MODAL_PROCESS_FUNCTION_NAME, MODAL_PROCESS_DOWNLOAD_NAME),
         search_regex="AG[1-9][0|O]{2}[1-9A-z]{7}"
     )
     f.run()

@@ -51,7 +51,7 @@ class FarmerLocal:
                     logger.info("internet connection established")
                     break
             finally:
-                self.vp.shutdown_processor()
+                self.vp.downwarm_processor()
             # if more then 5 failures in time windows program will end
             failures.append(time())
             if len(failures) < 5:
@@ -63,9 +63,9 @@ class FarmerLocal:
 
     def _run(self):
         self.watcher.insert_latest_videos_into_db()
-        for video in self.watcher.watch(self.vp.boot_up_processor):
+        for video in self.watcher.watch(self.vp.prewarm_processor):
             self.process_video(video)
-            self.vp.shutdown_processor()
+            self.vp.downwarm_processor()
 
     def process_video(self, video: 'DetailedVideoFromApi'):
         logger.info(f"Going to process video {video.title}")
