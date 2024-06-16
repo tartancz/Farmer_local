@@ -2,7 +2,7 @@ import logging
 import re
 from pathlib import Path
 from time import time, sleep
-from typing import TYPE_CHECKING, Callable, Generator
+from typing import TYPE_CHECKING
 
 import requests
 
@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from src.cloud_types import CodeType
 
 logger = logging.getLogger(LOGGER_NAME)
+
+
 class FarmerLocal:
     def __init__(self,
                  watcher: 'Watcher',

@@ -4,6 +4,7 @@ from pathlib import Path
 
 MIGRATION_SCRIPTS_FOLDER = Path(__file__).parent.parent / "src" / "database" / "migration" / "_migration"
 
+
 def migrate(conn_str: str):
     version = _get_actual_version(conn_str)
     conn = sqlite3.connect(conn_str)
@@ -22,6 +23,7 @@ def migrate(conn_str: str):
 def _get_next_version(actual_version: str):
     return "{:04}".format(int(actual_version) + 1)
 
+
 def _get_actual_version(conn_str: str):
     try:
         SQL = 'SELECT VERSION from database_version '
@@ -31,6 +33,7 @@ def _get_actual_version(conn_str: str):
             return cur.fetchone()[0]
     except Exception:
         return '0000'
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

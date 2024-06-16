@@ -1,7 +1,6 @@
-from typing import Generator
-import threading
 import queue
-import time
+import threading
+from typing import Generator
 
 import modal
 
@@ -11,14 +10,9 @@ from src.watcher.youtube_api import DetailedVideoFromApi
 
 
 class ModalVP(VideoProcessor):
-    def __init__(self,
-                 app_name: str,
-                 process_video_name_function: str,
-                 youtube_download_name_function: str
-                 ):
+    def __init__(self, app_name: str, process_video_name_function: str, youtube_download_name_function: str):
         self.process_video_func = modal.Function.lookup(app_name, process_video_name_function)
         self.youtube_download_func = modal.Function.lookup(app_name, youtube_download_name_function)
-
 
     def get_codes(self, video: DetailedVideoFromApi) -> Generator[CodeType, None, None]:
         threading.Thread(target=self.youtube_download_func.remote, args=(video.video_id,)).start()

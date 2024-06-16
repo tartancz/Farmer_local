@@ -1,7 +1,7 @@
+import argparse
 import sqlite3
 import sys
 from pathlib import Path
-import argparse
 
 # Add the root of the project to the sys.path for case when scripts are runned from another directory
 sys.path.append(str(Path(__file__).parent.parent))
