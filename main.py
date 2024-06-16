@@ -1,8 +1,3 @@
-from typing import Generator
-
-import modal
-
-from src.cloud_types import CodeType
 from src.database import Database
 from src.farmer_local.farmer_local import FarmerLocal
 from src.logger import configure_loggers
@@ -19,7 +14,7 @@ from src.setting import (
 )
 from src.video_processor.cloud_vp import ModalVP
 from src.watcher.watcher import Watcher
-from src.watcher.youtube_api import YoutubeApi, DetailedVideoFromApi
+from src.watcher.youtube_api import YoutubeApi
 
 
 def farm():

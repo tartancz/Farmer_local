@@ -49,10 +49,8 @@ class ModalVP(VideoProcessor):
         self.delete_video(video)
 
     def delete_video(self, video: DetailedVideoFromApi):
-        pass
-        #vol = modal.Volume.from_name("videos")
-        #vol.remove_file(video.video_id + ".mp4")
-        #vol.commit()
+        vol = modal.Volume.from_name("videos")
+        vol.remove_file(video.video_id + ".mp4")
 
     def downwarm_processor(self):
         self.process_video_func.keep_warm(0)
