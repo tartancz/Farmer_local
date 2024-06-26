@@ -71,6 +71,15 @@ def configure_loggers():
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(queue_handler)
 
+    log_format = logging.Formatter(
+            fmt="%(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s",
+            datefmt="%d/%m/%y %H:%M:%S",
+    )
+
+    error_handler = logging.FileHandler(os.path.join(LOGGING_PATH_FOLDER, "error.log"))
+    error_handler.setLevel(logging.ERROR)
+    error_handler.setFormatter(log_format)
+
     # mkdir for logging
     log_path = os.path.join(LOGGING_PATH_FOLDER, "logs")
     Path(log_path).mkdir(parents=True, exist_ok=True)
@@ -85,12 +94,7 @@ def configure_loggers():
         delay=False,
     )
 
-    file_handler.setFormatter(
-        logging.Formatter(
-            fmt="%(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s",
-            datefmt="%d/%m/%y %H:%M:%S",
-        )
-    )
+    file_handler.setFormatter(log_format)
 
     discord_handler = DiscordHandler(
         DISCORD_CHANNEL,
@@ -99,6 +103,6 @@ def configure_loggers():
     discord_handler.setLevel(DISCORD_LEVEL)
 
     queue_listener = QueueListener(
-        logger_queue, file_handler, discord_handler, respect_handler_level=True
+        logger_queue, error_handler, file_handler, discord_handler, respect_handler_level=True
     )
     queue_listener.start()
