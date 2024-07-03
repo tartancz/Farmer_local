@@ -76,16 +76,15 @@ def configure_loggers():
             datefmt="%d/%m/%y %H:%M:%S",
     )
 
-    error_handler = logging.FileHandler(os.path.join(LOGGING_PATH_FOLDER, "error.log"))
+    log_path = os.path.join(LOGGING_PATH_FOLDER, "logs")
+    # mkdir for logging
+    Path(log_path).mkdir(parents=True, exist_ok=True)
+
+    error_handler = logging.FileHandler(os.path.join(log_path, "error.log"))
     error_handler.setLevel(logging.ERROR)
     error_handler.setFormatter(log_format)
 
-    # mkdir for logging
-    log_path = os.path.join(LOGGING_PATH_FOLDER, "logs")
-    Path(log_path).mkdir(parents=True, exist_ok=True)
-
     logs_file = os.path.join(log_path, "app.log")
-
     file_handler = TimedRotatingFileHandler(
         logs_file,
         when="midnight",
@@ -93,7 +92,6 @@ def configure_loggers():
         encoding="utf-8",
         delay=False,
     )
-
     file_handler.setFormatter(log_format)
 
     discord_handler = DiscordHandler(
