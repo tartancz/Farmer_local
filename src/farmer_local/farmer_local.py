@@ -84,7 +84,7 @@ class FarmerLocal:
                     self._redeem_codes_from_modal([code_dict], video)
                 except Exception as E:
                     logger.error(E)
-            logger.discord(f"Video {video.title} processed successfully")
+            logger.discord(f"Video {video.title} processed successfully and took: {time() - self._start}")
 
     def _finds_code_in_description(self, video) -> list['str']:
         codes = []
