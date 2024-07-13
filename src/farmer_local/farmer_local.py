@@ -100,7 +100,7 @@ class FarmerLocal:
         for code_dict in codes:
             code = code_dict["code"]
             code_state = self.redeemer.redeem_code(code)
-            logger.discord(f"WOLT returned codeState {code_state.name} with code {code} using videoProcessing and took: {time() - self._start} and timestamp: {code_dict['timestamp']}")
+            logger.discord(f"WOLT returned codeState {code_state.name} \n with code {code} \n using videoProcessing \n and took: {(time() - self._start):.2F} \n and timestamp: {code_dict['timestamp']:.2F} \n")
             # write image from modal
             p = Path(f"./temp/{video.video_id}")
             p.mkdir(exist_ok=True, parents=True)
