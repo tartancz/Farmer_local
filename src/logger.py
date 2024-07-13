@@ -72,7 +72,7 @@ def configure_loggers():
     root_logger.addHandler(queue_handler)
 
     log_format = logging.Formatter(
-            fmt="%(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s",
+            fmt="\n -----------------------------------------------------------------------------\n %(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s ",
             datefmt="%d/%m/%y %H:%M:%S",
     )
 
