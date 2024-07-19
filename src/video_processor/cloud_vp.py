@@ -1,13 +1,16 @@
 import queue
 import threading
 from typing import Generator
+import logging
 
 import modal
 
 from src.cloud_types import CodeType
 from src.video_processor.video_processor import VideoProcessor
 from src.watcher.youtube_api import DetailedVideoFromApi
+from src.logger import LOGGER_NAME
 
+logger = logging.getLogger(LOGGER_NAME)
 
 class ModalVP(VideoProcessor):
     def __init__(self, app_name: str, process_video_name_function: str, youtube_download_name_function: str):
@@ -44,7 +47,10 @@ class ModalVP(VideoProcessor):
 
     def delete_video(self, video: DetailedVideoFromApi):
         vol = modal.Volume.from_name("videos")
-        vol.remove_file(video.video_id + "_complete.mp4")
+        try:
+            vol.remove_file(video.video_id + "_complete.mp4")
+        except Exception:
+            logging.discord("Failed to delete video file, probably youtube_download_func failed to download it.")
 
     def downwarm_processor(self):
         self.process_video_func.keep_warm(0)
