@@ -9,6 +9,7 @@ class CodeState(Enum):
     EXPIRED = auto()
     TOO_MANY_REQUESTS = auto()
     UNKNOWN_ERROR = auto()
+    SKIPPED = auto()
 
 
 class Redeemer(ABC):

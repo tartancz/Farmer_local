@@ -1,7 +1,9 @@
 import logging
+import random
 from dataclasses import dataclass
 from datetime import timedelta, datetime
 from typing import TYPE_CHECKING
+
 
 import requests
 
@@ -90,6 +92,12 @@ class Wolt(Redeemer):
         )
 
     def redeem_code(self, code: str) -> CodeState:
+        # TODO: make it so i can change it at runtime over discord
+        # 40% chance to skip code to do not get banned
+        if random.randint(0, 100) >= 60:
+            logger.discord("skipping code, because rnq....")
+            return CodeState.SKIPPED
+
         if self.is_token_expired():
             logger.debug("token is expired, getting new...")
             self.get_new_token()
