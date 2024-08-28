@@ -71,7 +71,7 @@ def configure_loggers():
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(queue_handler)
 
-    log_format = logging.Formatter(
+    error_format = logging.Formatter(
             fmt="\n -----------------------------------------------------------------------------\n %(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s ",
             datefmt="%d/%m/%y %H:%M:%S",
     )
@@ -82,7 +82,7 @@ def configure_loggers():
 
     error_handler = logging.FileHandler(os.path.join(log_path, "error.log"))
     error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(log_format)
+    error_handler.setFormatter(error_format)
 
     logs_file = os.path.join(log_path, "app.log")
     file_handler = TimedRotatingFileHandler(
@@ -92,6 +92,12 @@ def configure_loggers():
         encoding="utf-8",
         delay=False,
     )
+
+    log_format = logging.Formatter(
+            fmt="%(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s ",
+            datefmt="%d/%m/%y %H:%M:%S",
+    )
+
     file_handler.setFormatter(log_format)
 
     discord_handler = DiscordHandler(
