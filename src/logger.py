@@ -72,8 +72,8 @@ def configure_loggers():
     root_logger.addHandler(queue_handler)
 
     error_format = logging.Formatter(
-            fmt="\n -----------------------------------------------------------------------------\n %(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s ",
-            datefmt="%d/%m/%y %H:%M:%S",
+        fmt="\n -----------------------------------------------------------------------------\n %(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s ",
+        datefmt="%d/%m/%y %H:%M:%S",
     )
 
     log_path = os.path.join(LOGGING_PATH_FOLDER, "logs")
@@ -94,8 +94,8 @@ def configure_loggers():
     )
 
     log_format = logging.Formatter(
-            fmt="%(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s ",
-            datefmt="%d/%m/%y %H:%M:%S",
+        fmt="%(asctime)s - %(levelname)s - %(filename)s - [%(funcName)s]: %(message)s ",
+        datefmt="%d/%m/%y %H:%M:%S",
     )
 
     file_handler.setFormatter(log_format)

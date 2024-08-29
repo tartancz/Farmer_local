@@ -2,8 +2,8 @@ from datetime import datetime
 
 import pytest
 
-from src.watcher.youtube_api import DetailedVideoFromApi
 from src.redeemer.redeemer import CodeState
+from src.watcher.youtube_api import DetailedVideoFromApi
 
 
 @pytest.mark.parametrize("video, expected_value", [

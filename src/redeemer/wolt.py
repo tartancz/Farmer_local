@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from datetime import timedelta, datetime
 from typing import TYPE_CHECKING
 
-
 import requests
 
 from src.database import Database, RowDontExistException

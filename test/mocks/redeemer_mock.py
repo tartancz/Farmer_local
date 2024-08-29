@@ -1,10 +1,10 @@
-from src.redeemer import CodeState
 from src.redeemer.redeemer import Redeemer, CodeState
 
 
 class RedeemerMock(Redeemer):
     already_redeemed = set()
     valid_codes = ['123456789', '5555']
+
     def redeem_code(self, code: str) -> CodeState:
         if code in self.already_redeemed:
             return CodeState.ALREADY_TAKEN
@@ -12,4 +12,3 @@ class RedeemerMock(Redeemer):
             self.already_redeemed.add(code)
             return CodeState.SUCCESSFULLY_REDEEM
         return CodeState.BAD_CODE
-    

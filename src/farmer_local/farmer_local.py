@@ -90,7 +90,8 @@ class FarmerLocal:
         for code_dict in codes:
             code = code_dict["code"]
             code_state = self.redeemer.redeem_code(code)
-            logger.discord(f"WOLT returned codeState {code_state.name} \n with code {code} \n using videoProcessing \n and took: {(time() - self._start):.2F} \n and timestamp: {code_dict['timestamp']:.2F} \n")
+            logger.discord(
+                f"WOLT returned codeState {code_state.name} \n with code {code} \n using videoProcessing \n and took: {(time() - self._start):.2F} \n and timestamp: {code_dict['timestamp']:.2F} \n")
             # write image from modal
             p = Path(f"./temp/{video.video_id}")
             p.mkdir(exist_ok=True, parents=True)
@@ -112,7 +113,8 @@ class FarmerLocal:
     def _redeem_codes_from_description(self, codes: list[str], video: 'DetailedVideoFromApi'):
         for code in codes:
             code_state = self.redeemer.redeem_code(code)
-            logger.discord(f"WOLT returned codeState {code_state.name} with code {code} from description and took: {time() - self._start}")
+            logger.discord(
+                f"WOLT returned codeState {code_state.name} with code {code} from description and took: {time() - self._start}")
             # inserting into db
             self.db.code.insert(
                 video_id=video.video_id,
