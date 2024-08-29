@@ -18,6 +18,11 @@ if TYPE_CHECKING:
 ACCESS_TOKEN_URL = 'https://authentication.wolt.com/v1/wauth2/access_token'
 REDEEM_DISCOUNT_URL = 'https://restaurant-api.wolt.com/v2/credit_codes/consume'
 
+HEADER = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+    "Accept": "application/json",
+}
+
 logger = logging.getLogger(LOGGER_NAME)
 
 
@@ -71,7 +76,7 @@ class Wolt(Redeemer):
             'grant_type': 'refresh_token',
             'refresh_token': refresh_token,
         }
-        response = requests.post(ACCESS_TOKEN_URL, data=data)
+        response = requests.post(ACCESS_TOKEN_URL, headers=HEADER, data=data)
         if response.status_code != 200:
             raise RefreshAuthFailedException(
                 f"auth failed with status code: {response.status_code} and text: {response.text}")
@@ -122,10 +127,8 @@ class Wolt(Redeemer):
     @wait_for_internet_if_not_avaible_decorator()
     def _make_request_to_code_redeem(self, code: str) -> 'Response':
         logger.info(f"redeming code {code}")
-        headers = {
-            'accept': 'application/json, text/plain, */*',
-            'authorization': f'Bearer {self.actual_token.access_token}',
-        }
+        headers = HEADER.copy()
+        headers['authorization'] = f'Bearer {self.actual_token.access_token}'
         data = {
             "code": code
         }
