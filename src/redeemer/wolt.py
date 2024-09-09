@@ -1,5 +1,6 @@
 import logging
 import random
+from abc import ABC
 from dataclasses import dataclass
 from datetime import timedelta, datetime
 from typing import TYPE_CHECKING
@@ -38,6 +39,9 @@ class WoltTokenFromResponse:
 
 
 class Wolt(Redeemer):
+    def get_account_name(self) -> str:
+        return self.account.account_name
+
     def __init__(self, db: Database, account_name: str):
         self._db = db
         # will check if account exist in database
