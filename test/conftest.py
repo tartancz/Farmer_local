@@ -4,7 +4,7 @@ from script.migrate import migrate
 from src.database import Database
 from src.farmer_local import FarmerLocal
 from src.logger import add_loging_level, DISCORD_LEVEL
-from test.mocks.cloud_mock import mock_modal
+from test.mocks.cloud_mock import MockProcessor
 from test.mocks.redeemer_mock import RedeemerMock
 
 
@@ -17,8 +17,9 @@ def farmer(tmp_path_factory) -> FarmerLocal:
         watcher=None,
         redeemer=RedeemerMock(),
         search_regex=r'123456789|5555',
-        process_video_function=mock_modal,
-        db=Database(db)
+        vp=MockProcessor(),
+        db=Database(db),
+        save_image=False
     )
     return f
 
