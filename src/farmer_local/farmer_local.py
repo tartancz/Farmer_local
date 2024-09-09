@@ -24,13 +24,15 @@ class FarmerLocal:
                  redeemer: 'Redeemer',
                  db: 'Database',
                  vp: 'VideoProcessor',
-                 search_regex: str
+                 search_regex: str,
+                 save_image: bool = True
                  ):
         self.watcher = watcher
         self.redeemer = redeemer
         self.db = db
         self.vp = vp
         self.search_regex = re.compile(search_regex)
+        self.save_image = save_image
         self._start: float | None = None
 
     def run(self):
@@ -94,12 +96,13 @@ class FarmerLocal:
             logger.discord(
                 f"WOLT returned codeState {code_state.name} \n with code {code} \n using videoProcessing \n and took: {(time() - self._start):.2F} \n and timestamp: {code_dict['timestamp']:.2F} \n")
             # write image from modal
-            p = Path(f"./temp/{video.video_id}")
-            p.mkdir(exist_ok=True, parents=True)
-            p = p / f"{code}.jpg"
-            p.write_bytes(code_dict["frame"])
+            if self.save_image:
+                p = Path(f"./temp/{video.video_id}")
+                p.mkdir(exist_ok=True, parents=True)
+                p = p / f"{code}.jpg"
+                p.write_bytes(code_dict["frame"])
 
-            logger.info(f"saving image of code to {p.absolute()}")
+                logger.info(f"saving image of code to {p.absolute()}")
 
             # inserting into db
             self.db.code.insert(
