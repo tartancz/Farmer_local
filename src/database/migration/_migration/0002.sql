@@ -11,4 +11,11 @@ alter table "code"
 alter table "code"
     add column "value" INT NULL;
 
+alter table "wolt_account"
+    add column "max_credits_per_month" INT NOT NULL DEFAULT 0;
 
+alter table "wolt_account"
+    add column "priority" INT NULL;
+
+alter table "wolt_account"
+    add column "working_credentials" boolean NULL;

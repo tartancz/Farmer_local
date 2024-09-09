@@ -10,6 +10,9 @@ class WoltAccount:
     id: int
     account_name: str
     created: datetime
+    max_credits_per_month: int = 0
+    priority: int = None
+    working_credentials: bool | None = None
 
 
 class WoltAccountModel(Model):
@@ -24,7 +27,7 @@ class WoltAccountModel(Model):
 
     def get_by_id(self, account_id: int) -> WoltAccount:
         select_query = '''
-            SELECT id, account_name, created
+            SELECT id, account_name, created, max_credits_per_month, priority, working_credentials 
             FROM wolt_account
             WHERE id = ?
             LIMIT 1;
@@ -37,7 +40,7 @@ class WoltAccountModel(Model):
 
     def get_by_account_name(self, account_name: str) -> WoltAccount:
         select_query = '''
-            SELECT id, account_name, created
+            SELECT id, account_name, created, max_credits_per_month, priority, working_credentials 
             FROM wolt_account
             WHERE account_name=?
             LIMIT 1;
