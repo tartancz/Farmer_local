@@ -14,10 +14,14 @@ def migrate(conn_str: str):
         actual_migration = MIGRATION_SCRIPTS_FOLDER / f"{version}.sql"
         if not actual_migration.exists():
             break
-        with open(actual_migration, "r") as f:
-            cur.executescript(f.read())
-        conn.commit()
+        try:
+            with open(actual_migration, "r") as f:
+                conn.executescript(f.read())
+        except sqlite3.Error as e:
+            print(f"Migration {version} failed with error: {e}")
+            break
         print(f"Migration {version} was applied.")
+    conn.close()
 
 
 def _get_next_version(actual_version: str):
