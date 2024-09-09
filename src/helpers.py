@@ -34,3 +34,14 @@ def wait_for_internet_if_not_avaible_decorator():
         return wrapper
 
     return decorator
+
+
+def wolt_get_value_from_code(code: str) -> int:
+    '''
+    This function will return value from code.
+    if code cant be converted to int it will return 0
+    '''
+    try:
+        return int(code[2:5])
+    except ValueError:
+        return 0
