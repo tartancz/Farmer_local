@@ -12,3 +12,6 @@ class RedeemerMock(Redeemer):
             self.already_redeemed.add(code)
             return CodeState.SUCCESSFULLY_REDEEM
         return CodeState.BAD_CODE
+
+    def get_account_name(self) -> str:
+        return "mock"
