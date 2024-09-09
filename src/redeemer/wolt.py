@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import requests
 
 from src.database import Database, RowDontExistException
+from src.helpers import wait_for_internet_if_not_avaible_decorator
 from src.logger import LOGGER_NAME
 from src.redeemer.errors import RefreshAuthFailedException, NotAuthorizedException
 from src.redeemer.redeemer import Redeemer, CodeState
@@ -65,6 +66,7 @@ class Wolt(Redeemer):
             )
 
     @staticmethod
+    @wait_for_internet_if_not_avaible_decorator()
     def make_request_to_new_token(refresh_token: str) -> WoltTokenFromResponse:
         data = {
             'grant_type': 'refresh_token',
@@ -118,6 +120,7 @@ class Wolt(Redeemer):
             return CodeState.SUCCESSFULLY_REDEEM
         return CodeState.UNKNOWN_ERROR  # type: ignore
 
+    @wait_for_internet_if_not_avaible_decorator()
     def _make_request_to_code_redeem(self, code: str) -> 'Response':
         logger.info(f"redeming code {code}")
         headers = {

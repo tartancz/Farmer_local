@@ -4,8 +4,6 @@ from pathlib import Path
 from time import time, sleep
 from typing import TYPE_CHECKING
 
-import requests
-
 from src.logger import LOGGER_NAME
 from src.video_processor.video_processor import VideoProcessor
 
@@ -42,16 +40,6 @@ class FarmerLocal:
                 self._run()
             except Exception as e:
                 logger.exception(e)
-                while True:
-                    # when internet connection is lost, will start pinging to google.com until response come successfully back
-                    try:
-                        requests.get("https://www.google.com")
-                    except Exception as innerE:
-                        sleep(10)
-                        logger.debug("still no internet connection")
-                        continue
-                    logger.info("internet connection established")
-                    break
             finally:
                 self.vp.downwarm_processor()
             # if more then 5 failures in time windows program will end
@@ -61,6 +49,8 @@ class FarmerLocal:
             oldest_exc = failures.pop(0)
             if time() - oldest_exc < 1800:
                 logger.discord("Program ended because too many exceptions occured")
+                # sleep so logging can happened
+                sleep(3)
                 exit(1)
 
     def _run(self):

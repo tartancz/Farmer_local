@@ -10,6 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
 
+from src.helpers import wait_for_internet_if_not_avaible_decorator
 from src.logger import LOGGER_NAME
 from src.watcher.errors import VideoDoNotExistException
 
@@ -66,6 +67,7 @@ class YoutubeApi:
 
         return decorator
 
+    @wait_for_internet_if_not_avaible_decorator()
     @_add_points_decorator(1)
     def get_video_count(self) -> int:
         """
@@ -77,6 +79,7 @@ class YoutubeApi:
         logger.debug(f'video count is {video_count} and used points is {self._used_points}')
         return video_count
 
+    @wait_for_internet_if_not_avaible_decorator()
     @_add_points_decorator(100)
     def get_detailed_video(self, video_id: str) -> DetailedVideoFromApi:
         logger.debug(f'getting detailed video {video_id} and actual used points are {self._used_points}')
@@ -94,6 +97,7 @@ class YoutubeApi:
         )
         return video
 
+    @wait_for_internet_if_not_avaible_decorator()
     @_add_points_decorator(100)
     def get_latest_videos_from_api(self, count=1) -> list[VideoFromApi]:
         logger.debug(f"getting latest videos from api {count} and actual used points are {self._used_points}")
@@ -148,6 +152,7 @@ class YoutubeApi:
         return datetime.combine(next_day.date(), RESET_UNITS_TIME, tzinfo=pytz.UTC)
 
     # SCRAPING METHOD
+    @wait_for_internet_if_not_avaible_decorator()
     def get_latest_videos_from_scrapping(self, count: int) -> list[str]:
         if count > 30:
             raise ValueError("You can get only 30 latest videos")
