@@ -16,3 +16,7 @@ class Redeemer(ABC):
     @abstractmethod
     def redeem_code(self, code: str) -> CodeState:
         pass
+
+    @abstractmethod
+    def get_account_name(self) -> str:
+        pass

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from src.logger import LOGGER_NAME
 from src.video_processor.video_processor import VideoProcessor
+from src.helpers import wolt_get_value_from_code
 
 if TYPE_CHECKING:
     from src.watcher.youtube_api import DetailedVideoFromApi
@@ -95,7 +96,7 @@ class FarmerLocal:
             # write image from modal
             p = Path(f"./temp/{video.video_id}")
             p.mkdir(exist_ok=True, parents=True)
-            p = p / f"{code_dict['code']}.jpg"
+            p = p / f"{code}.jpg"
             p.write_bytes(code_dict["frame"])
 
             logger.info(f"saving image of code to {p.absolute()}")
@@ -103,11 +104,14 @@ class FarmerLocal:
             # inserting into db
             self.db.code.insert(
                 video_id=video.video_id,
-                code=code_dict.get("code"),
+                code=code,
                 timestamp=code_dict["timestamp"],
                 how_long_to_process_in_total=time() - self._start,
                 code_state_id=code_state.value,
-                path_to_frame=str(p.absolute())
+                activated_by=self.redeemer.get_account_name(),
+                value=wolt_get_value_from_code(code),
+                path_to_frame=str(p.absolute()),
+
             )
 
     def _redeem_codes_from_description(self, codes: list[str], video: 'DetailedVideoFromApi'):
@@ -120,7 +124,9 @@ class FarmerLocal:
                 video_id=video.video_id,
                 code=code,
                 how_long_to_process_in_total=time() - self._start,
-                code_state_id=code_state.value
+                code_state_id=code_state.value,
+                activated_by=self.redeemer.get_account_name(),
+                value=wolt_get_value_from_code(code),
             )
 
     def __enter__(self):
