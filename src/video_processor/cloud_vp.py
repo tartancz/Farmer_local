@@ -15,13 +15,22 @@ logger = logging.getLogger(LOGGER_NAME)
 
 
 class ModalVP(VideoProcessor):
+    _download_exception: Exception = None
     def __init__(self, app_name: str, process_video_name_function: str, youtube_download_name_function: str):
         self.process_video_func = modal.Function.lookup(app_name, process_video_name_function)
         self.youtube_download_func = modal.Function.lookup(app_name, youtube_download_name_function)
 
+    #TODO: REFACTOR
+    #TODO: STOP ALL WORKERS SOMEHOW WHEN download_video FAILS
     @wait_for_internet_if_not_avaible_decorator()
     def get_codes(self, video: DetailedVideoFromApi) -> Generator[CodeType, None, None]:
-        threading.Thread(target=self.youtube_download_func.remote, args=(video.video_id,)).start()
+        def download_video(video_id: str):
+            try:
+                self.youtube_download_func.remote(video_id)
+            except Exception as e:
+                self._download_exception = e
+
+        threading.Thread(target=download_video, args=(video.video_id,)).start()
         q = queue.Queue()
 
         def worker(part, total_parts):
@@ -44,9 +53,14 @@ class ModalVP(VideoProcessor):
                 yield result
                 q.task_done()
             except queue.Empty:
+                if self._download_exception:
+                    break
                 continue
         self.downwarm_processor()
         self.delete_video(video)
+        if self._download_exception:
+            logger.exception(self._download_exception)
+            raise self._download_exception
 
     @wait_for_internet_if_not_avaible_decorator()
     def delete_video(self, video: DetailedVideoFromApi):
