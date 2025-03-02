@@ -8,6 +8,7 @@ from src.setting import (
     MODAL_PROCESS_DOWNLOAD_NAME,
     MODAL_PROCESS_FUNCTION_NAME,
     WOLT_NAME,
+    WOLT_SKIP_CODES,
     YOUTUBE_API_KEY,
     YOUTUBE_CHANNEL_ID,
     YOUTUBE_CHANNEL_NAME,
@@ -46,7 +47,7 @@ def get_farmer(
         )
 
     f = FarmerLocal(
-        watcher=watcher, redeemer=redeemer, db=db, vp=vp, search_regex=search_regex
+        watcher=watcher, redeemer=redeemer, db=db, vp=vp, search_regex=search_regex, skip_videos=WOLT_SKIP_CODES
     )
     return f
 

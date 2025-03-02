@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from xmlrpc.client import Boolean
 
 import dotenv
 
@@ -10,6 +11,7 @@ YOUTUBE_CHANNEL_ID = os.environ["FARMER_LOCAL_YOUTUBE_CHANNEL_ID"]
 YOUTUBE_CHANNEL_NAME = os.environ["FARMER_LOCAL_YOUTUBE_CHANNEL_NAME"]
 
 WOLT_NAME = os.environ["FARMER_LOCAL_WOLT_NAME"]
+WOLT_SKIP_CODES = Boolean(os.getenv("FARMER_LOCAL_WOLT_SKIP_CODES", False))
 
 MODAL_APP_NAME = os.environ["FARMER_LOCAL_MODAL_APP_NAME"]
 MODAL_PROCESS_FUNCTION_NAME = os.environ["FARMER_LOCAL_MODAL_PROCESS_FUNCTION_NAME"]

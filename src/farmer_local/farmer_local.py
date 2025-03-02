@@ -1,4 +1,6 @@
+from datetime import datetime
 import logging
+import random
 import re
 from pathlib import Path
 from time import sleep, time
@@ -25,6 +27,7 @@ class FarmerLocal:
         db: "Database",
         vp: "VideoProcessor",
         search_regex: str,
+        skip_videos: bool = False,
     ):
         self.watcher = watcher
         self.redeemer = redeemer
@@ -32,6 +35,7 @@ class FarmerLocal:
         self.vp = vp
         self.search_regex = re.compile(search_regex)
         self._start: float | None = None
+        self.skip_videos = skip_videos
 
     def run(self):
         failures = list()
@@ -57,6 +61,9 @@ class FarmerLocal:
     def _run(self):
         self.watcher.insert_latest_videos_into_db()
         for video in self.watcher.watch(self.vp.prewarm_processor):
+            if self.skip_videos and datetime.now().hour > 7 and datetime.now().hour < 22 and random.random() > 0.4:
+                self.vp.downwarm_processor()
+                continue
             self.process_video(video)
             self.vp.downwarm_processor()
 
