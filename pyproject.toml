@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "farmer-local"
+version = "0.1.0"
+description = ""
+authors = ["Jan Ruzicka <tartanec@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+modal = "^0.73.78"
+requests = "^2.32.3"
+pytz = "^2025.1"
+python-dateutil = "^2.9.0.post0"
+google-api-python-client = "^2.162.0"
+beautifulsoup4 = "^4.13.3"
+python-dotenv = "^1.0.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
