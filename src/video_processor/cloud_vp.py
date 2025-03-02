@@ -16,12 +16,22 @@ logger = logging.getLogger(LOGGER_NAME)
 
 class ModalVP(VideoProcessor):
     _download_exception: Exception = None
-    def __init__(self, app_name: str, process_video_name_function: str, youtube_download_name_function: str):
-        self.process_video_func = modal.Function.lookup(app_name, process_video_name_function)
-        self.youtube_download_func = modal.Function.lookup(app_name, youtube_download_name_function)
 
-    #TODO: REFACTOR
-    #TODO: STOP ALL WORKERS SOMEHOW WHEN download_video FAILS
+    def __init__(
+        self,
+        app_name: str,
+        process_video_name_function: str,
+        youtube_download_name_function: str,
+    ):
+        self.process_video_func = modal.Function.lookup(
+            app_name, process_video_name_function
+        )
+        self.youtube_download_func = modal.Function.lookup(
+            app_name, youtube_download_name_function
+        )
+
+    # TODO: REFACTOR
+    # TODO: STOP ALL WORKERS SOMEHOW WHEN download_video FAILS
     @wait_for_internet_if_not_avaible_decorator()
     def get_codes(self, video: DetailedVideoFromApi) -> Generator[CodeType, None, None]:
         def download_video(video_id: str):
@@ -34,7 +44,9 @@ class ModalVP(VideoProcessor):
         q = queue.Queue()
 
         def worker(part, total_parts):
-            for code_type in self.process_video_func.remote_gen(video.video_id, part, total_parts):
+            for code_type in self.process_video_func.remote_gen(
+                video.video_id, part, total_parts
+            ):
                 q.put(code_type)
 
         worker_count = int(video.video_lenght // 180)
@@ -44,7 +56,10 @@ class ModalVP(VideoProcessor):
             worker_count = 40
         self.prewarm_processor(worker_count)
 
-        workers = [threading.Thread(target=worker, args=(part, worker_count)) for part in range(worker_count)]
+        workers = [
+            threading.Thread(target=worker, args=(part, worker_count))
+            for part in range(worker_count)
+        ]
         for worker in workers:
             worker.start()
         while any(t.is_alive() for t in workers) or not q.empty():
@@ -68,7 +83,9 @@ class ModalVP(VideoProcessor):
         try:
             vol.remove_file(video.video_id + "_complete.mp4")
         except Exception:
-            logging.discord("Failed to delete video file, probably youtube_download_func failed to download it.")
+            logging.discord(
+                "Failed to delete video file, probably youtube_download_func failed to download it."
+            )
 
     @wait_for_internet_if_not_avaible_decorator()
     def downwarm_processor(self):

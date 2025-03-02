@@ -1,30 +1,31 @@
 import logging
 import re
 from pathlib import Path
-from time import time, sleep
+from time import sleep, time
 from typing import TYPE_CHECKING
 
 from src.logger import LOGGER_NAME
 from src.video_processor.video_processor import VideoProcessor
 
 if TYPE_CHECKING:
-    from src.watcher.youtube_api import DetailedVideoFromApi
-    from src.watcher import Watcher
+    from src.cloud_types import CodeType
     from src.database import Database
     from src.redeemer import Redeemer
-    from src.cloud_types import CodeType
+    from src.watcher import Watcher
+    from src.watcher.youtube_api import DetailedVideoFromApi
 
 logger = logging.getLogger(LOGGER_NAME)
 
 
 class FarmerLocal:
-    def __init__(self,
-                 watcher: 'Watcher',
-                 redeemer: 'Redeemer',
-                 db: 'Database',
-                 vp: 'VideoProcessor',
-                 search_regex: str
-                 ):
+    def __init__(
+        self,
+        watcher: "Watcher",
+        redeemer: "Redeemer",
+        db: "Database",
+        vp: "VideoProcessor",
+        search_regex: str,
+    ):
         self.watcher = watcher
         self.redeemer = redeemer
         self.db = db
@@ -59,7 +60,7 @@ class FarmerLocal:
             self.process_video(video)
             self.vp.downwarm_processor()
 
-    def process_video(self, video: 'DetailedVideoFromApi'):
+    def process_video(self, video: "DetailedVideoFromApi"):
         logger.info(f"Going to process video {video.title}")
         with self:
             codes = self._finds_code_in_description(video)
@@ -74,9 +75,11 @@ class FarmerLocal:
                     self._redeem_codes_from_modal([code_dict], video)
                 except Exception as E:
                     logger.error(E)
-            logger.discord(f"Video {video.title} processed successfully and took: {time() - self._start}")
+            logger.discord(
+                f"Video {video.title} processed successfully and took: {time() - self._start}"
+            )
 
-    def _finds_code_in_description(self, video) -> list['str']:
+    def _finds_code_in_description(self, video) -> list["str"]:
         codes = []
         logger.debug(f"trying to find codes in description")
         for code in self.search_regex.findall(video.description):
@@ -86,12 +89,15 @@ class FarmerLocal:
             logger.debug(f"could not find code in description: {video.description}")
         return codes
 
-    def _redeem_codes_from_modal(self, codes: list['CodeType'], video: 'DetailedVideoFromApi'):
+    def _redeem_codes_from_modal(
+        self, codes: list["CodeType"], video: "DetailedVideoFromApi"
+    ):
         for code_dict in codes:
             code = code_dict["code"]
             code_state = self.redeemer.redeem_code(code)
             logger.discord(
-                f"WOLT returned codeState {code_state.name} \n with code {code} \n using videoProcessing \n and took: {(time() - self._start):.2F} \n and timestamp: {code_dict['timestamp']:.2F} \n")
+                f"WOLT returned codeState {code_state.name} \n with code {code} \n using videoProcessing \n and took: {(time() - self._start):.2F} \n and timestamp: {code_dict['timestamp']:.2F} \n"
+            )
             # write image from modal
             p = Path(f"./temp/{video.video_id}")
             p.mkdir(exist_ok=True, parents=True)
@@ -107,20 +113,23 @@ class FarmerLocal:
                 timestamp=code_dict["timestamp"],
                 how_long_to_process_in_total=time() - self._start,
                 code_state_id=code_state.value,
-                path_to_frame=str(p.absolute())
+                path_to_frame=str(p.absolute()),
             )
 
-    def _redeem_codes_from_description(self, codes: list[str], video: 'DetailedVideoFromApi'):
+    def _redeem_codes_from_description(
+        self, codes: list[str], video: "DetailedVideoFromApi"
+    ):
         for code in codes:
             code_state = self.redeemer.redeem_code(code)
             logger.discord(
-                f"WOLT returned codeState {code_state.name} with code {code} from description and took: {time() - self._start}")
+                f"WOLT returned codeState {code_state.name} with code {code} from description and took: {time() - self._start}"
+            )
             # inserting into db
             self.db.code.insert(
                 video_id=video.video_id,
                 code=code,
                 how_long_to_process_in_total=time() - self._start,
-                code_state_id=code_state.value
+                code_state_id=code_state.value,
             )
 
     def __enter__(self):

@@ -2,14 +2,15 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sqlite3 import Connection
+
     from src.database.database import Transaction
 
 
 class Model:
-    def __init__(self, db: 'Connection', table_name: str, transaction: 'Transaction'):
-        '''
+    def __init__(self, db: "Connection", table_name: str, transaction: "Transaction"):
+        """
         BE CAREFULL PARAMETER TABLE_NAME IS NOT SAFE FOR SQL INJECTION!!!
-        '''
+        """
         self._db = db
         self._cursor = db.cursor()
         self.table_name = table_name

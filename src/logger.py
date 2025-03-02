@@ -1,36 +1,37 @@
 import logging
 import os
 import queue
-from logging.handlers import QueueHandler, TimedRotatingFileHandler, QueueListener
+from logging.handlers import QueueHandler, QueueListener, TimedRotatingFileHandler
 from pathlib import Path
 
 import requests
 
-from src.setting import LOGGING_PATH_FOLDER, DISCORD_CHANNEL, DISCORD_BOT_ID
+from src.setting import DISCORD_BOT_ID, DISCORD_CHANNEL, LOGGING_PATH_FOLDER
 
 DISCORD_LEVEL = logging.INFO + 5
 LOGGER_NAME = "main"
 
 
 class DiscordHandler(logging.Handler):
-    def __init__(self,
-                 channel_id: int,
-                 bot_token: str,
-                 ):
+    def __init__(
+        self,
+        channel_id: int,
+        bot_token: str,
+    ):
         self.channel_url = DiscordHandler._getDiscordUrl(channel_id)
         self.bot_token = bot_token
         logging.Handler.__init__(self=self)
 
     @staticmethod
     def _getDiscordUrl(channel_id: int):
-        return f'https://discord.com/api/channels/{channel_id}/messages'
+        return f"https://discord.com/api/channels/{channel_id}/messages"
 
     def emit(self, record: logging.LogRecord):
         try:
             requests.post(
                 self.channel_url,
-                headers={'Authorization': f'Bot {self.bot_token}'},
-                json={'content': record.msg},
+                headers={"Authorization": f"Bot {self.bot_token}"},
+                json={"content": record.msg},
             )
         except Exception:
             pass
@@ -42,11 +43,11 @@ def add_loging_level(level_name: str, level_num: int, method_name: str = None):
         method_name = level_name.lower()
 
     if hasattr(logging, level_name):
-        raise AttributeError('{} already defined in logging module'.format(level_name))
+        raise AttributeError("{} already defined in logging module".format(level_name))
     if hasattr(logging, method_name):
-        raise AttributeError('{} already defined in logging module'.format(method_name))
+        raise AttributeError("{} already defined in logging module".format(method_name))
     if hasattr(logging.getLoggerClass(), method_name):
-        raise AttributeError('{} already defined in logger class'.format(method_name))
+        raise AttributeError("{} already defined in logger class".format(method_name))
 
     def logForLevel(self, message, *args, **kwargs):
         if self.isEnabledFor(level_num):
@@ -100,13 +101,14 @@ def configure_loggers():
 
     file_handler.setFormatter(log_format)
 
-    discord_handler = DiscordHandler(
-        DISCORD_CHANNEL,
-        DISCORD_BOT_ID
-    )
+    discord_handler = DiscordHandler(DISCORD_CHANNEL, DISCORD_BOT_ID)
     discord_handler.setLevel(DISCORD_LEVEL)
 
     queue_listener = QueueListener(
-        logger_queue, error_handler, file_handler, discord_handler, respect_handler_level=True
+        logger_queue,
+        error_handler,
+        file_handler,
+        discord_handler,
+        respect_handler_level=True,
     )
     queue_listener.start()

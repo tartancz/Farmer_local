@@ -1,16 +1,21 @@
 import sqlite3
 from typing import TYPE_CHECKING, TypeVar
 
-from src.database.models import WoltAccountModel, WoltTokenModel, YoutubeVideoModel, CodeModel
+from src.database.models import (
+    CodeModel,
+    WoltAccountModel,
+    WoltTokenModel,
+    YoutubeVideoModel,
+)
 
 if TYPE_CHECKING:
     from sqlite3 import Connection
 
-    model_generic = TypeVar('model_generic', bound='Model')
+    model_generic = TypeVar("model_generic", bound="Model")
 
 
 class Transaction:
-    def __init__(self, db: 'Connection'):
+    def __init__(self, db: "Connection"):
         self.running_transaction: bool = False
         self._db = db
 
@@ -37,9 +42,11 @@ class Database:
         self.youtube_video = self._init_model(YoutubeVideoModel, "youtube_video")
         self.code = self._init_model(CodeModel, "code")
 
-    def _init_model(self, model: type['model_generic'], table_name: str) -> 'model_generic':
+    def _init_model(
+        self, model: type["model_generic"], table_name: str
+    ) -> "model_generic":
         if not self.table_exists(table_name):
-            raise ValueError(f'Table {table_name} does not exist, cannot create model')
+            raise ValueError(f"Table {table_name} does not exist, cannot create model")
         return model(self._db, table_name, self.transaction)
 
     def table_exists(self, table_name: str) -> bool:
